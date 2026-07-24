@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloomy — Every student, in full bloom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FBF3E5;
+  --paper:#FFFAF1;
+  --forest:#1C3A2A;
+  --forest-deep:#132B1E;
+  --ink:#1E2A1A;
+  --chartreuse:#CDF463;
+  --marigold:#F5C33B;
+  --coral:#EE5B2E;
+  --pink:#F5AFCE;
+  --sage:#9DBE8D;
+  --radius-pill:100px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto}
+body{
+  font-family:'Instrument Sans',sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--chartreuse);color:var(--forest)}
+h1,h2,h3,.serif{font-family:'Baloo 2',sans-serif;font-optical-sizing:auto}
+.hand{font-family:'Caveat',cursive}
+img{max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+/* ---------- grain ---------- */
+.grain{position:fixed;inset:-50%;width:200%;height:200%;pointer-events:none;z-index:2000;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain 8s steps(10) infinite;}
+@keyframes grain{
+  0%,100%{transform:translate(0,0)}10%{transform:translate(-5%,-10%)}20%{transform:translate(-15%,5%)}
+  30%{transform:translate(7%,-25%)}40%{transform:translate(-5%,25%)}50%{transform:translate(-15%,10%)}
+  60%{transform:translate(15%,0)}70%{transform:translate(0,15%)}80%{transform:translate(3%,35%)}90%{transform:translate(-10%,10%)}
+}
+
+/* ---------- nav ---------- */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 40px;
+  transition:background .4s,box-shadow .4s, padding .4s;
+}
+nav.scrolled{background:rgba(251,243,229,.88);backdrop-filter:blur(14px);box-shadow:0 1px 0 rgba(28,58,42,.08);padding:14px 40px}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:26px;color:var(--forest);letter-spacing:-.02em}
+.logo svg{width:32px;height:32px}
+.nav-links{display:flex;gap:34px;align-items:center;font-size:15px;font-weight:500}
+.nav-links a:not(.btn){position:relative;color:var(--forest)}
+.nav-links a.btn{color:var(--cream)}
+.nav-links a:not(.btn)::after{content:'';position:absolute;left:0;bottom:-4px;width:100%;height:2px;background:var(--coral);transform:scaleX(0);transform-origin:right;transition:transform .35s cubic-bezier(.65,0,.35,1)}
+.nav-links a:not(.btn):hover::after{transform:scaleX(1);transform-origin:left}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--forest);color:var(--cream);
+  padding:14px 28px;border-radius:var(--radius-pill);
+  font-size:15px;font-weight:600;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1), background .3s;
+  will-change:transform;
+}
+.btn:hover{background:var(--forest-deep)}
+.btn .arrow{transition:transform .3s}
+.btn:hover .arrow{transform:translateX(4px)}
+.btn.light{background:var(--chartreuse);color:var(--forest)}
+.btn.light:hover{background:#DBFA80}
+.btn.big{padding:20px 40px;font-size:17px}
+
+/* ---------- hero ---------- */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;position:relative;
+  padding:150px 24px 190px;
+}
+#pollen{position:absolute;inset:0;pointer-events:none}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1.5px solid var(--forest);border-radius:var(--radius-pill);
+  padding:8px 18px;font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--forest);margin-bottom:34px;background:var(--paper);
+}
+.hero-eyebrow .dot{width:8px;height:8px;border-radius:50%;background:var(--coral);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.6}}
+.hero h1{
+  font-size:clamp(52px,9.2vw,138px);
+  line-height:.98;letter-spacing:-.03em;
+  color:var(--forest);font-weight:600;
+  max-width:1100px;
+}
+.hero h1 .line{display:block;overflow:hidden}
+.hero h1 .line>span{display:inline-block}
+.hero h1 em{font-weight:500;position:relative;white-space:nowrap}
+.hero h1 .flower-slot{display:inline-block;width:.9em;height:.9em;vertical-align:-8%;margin:0 .04em}
+.hero-sub{
+  margin-top:34px;font-size:clamp(17px,1.6vw,21px);line-height:1.55;color:#41523B;max-width:620px;
+}
+.hero-ctas{margin-top:40px;display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.link-btn{display:inline-flex;align-items:center;gap:10px;padding:20px 10px;font-weight:600;font-size:17px;color:var(--forest);position:relative}
+.link-btn::after{content:'';position:absolute;left:0;bottom:12px;height:2px;width:100%;background:var(--forest);transform-origin:left;transition:transform .35s}
+.link-btn:hover::after{transform:scaleX(.35)}
+.hero-note{margin-top:22px;font-size:14px;color:#6B7A62}
+.hero-note .hand{font-size:19px;color:var(--coral)}
+
+/* floating pills */
+.float-pill{
+  position:absolute;padding:12px 22px;border-radius:var(--radius-pill);
+  font-weight:600;font-size:15px;white-space:nowrap;
+  box-shadow:0 10px 30px rgba(28,58,42,.12);
+  will-change:transform;user-select:none;
+}
+.fp1{background:var(--pink);color:#7C1E4D;top:24%;left:7%;transform:rotate(-8deg)}
+.fp2{background:var(--marigold);color:#6B4A00;top:20%;right:8%;transform:rotate(6deg)}
+.fp3{background:var(--chartreuse);color:var(--forest);bottom:24%;left:10%;transform:rotate(5deg)}
+.fp4{background:var(--forest);color:var(--cream);bottom:28%;right:7%;transform:rotate(-5deg)}
+@media(max-width:900px){.float-pill{display:none}}
+
+/* ---------- marquee ---------- */
+.marquee{
+  background:var(--forest);color:var(--cream);
+  padding:20px 0;overflow:hidden;white-space:nowrap;
+  transform:rotate(-1.2deg) scale(1.02);margin:40px -20px 0;
+  position:relative;z-index:3;
+}
+.marquee-track{display:inline-flex;gap:0;will-change:transform}
+.marquee-item{display:inline-flex;align-items:center;gap:28px;padding-right:28px;font-family:'Baloo 2',sans-serif;font-size:22px}
+.marquee-item svg{width:20px;height:20px;flex:none}
+
+/* ---------- trust ---------- */
+.trust{padding:90px 24px 30px;text-align:center}
+.trust p.label{font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:#6B7A62;margin-bottom:30px}
+.trust-row{display:flex;gap:18px 44px;justify-content:center;flex-wrap:wrap;align-items:center}
+.trust-row span{font-family:'Baloo 2',sans-serif;font-size:20px;font-weight:600;color:var(--forest);opacity:.75;transition:opacity .3s}
+.trust-row span:hover{opacity:1}
+
+/* ---------- editorial statement ---------- */
+.statement{padding:130px 24px;max-width:1150px;margin:0 auto;text-align:center}
+.statement h2{
+  font-size:clamp(34px,4.6vw,64px);line-height:1.16;letter-spacing:-.02em;
+  color:var(--forest);font-weight:500;
+}
+.statement h2 .hl{position:relative;display:inline-block;font-weight:600}
+.statement h2 .hl svg{position:absolute;left:-2%;bottom:-.18em;width:104%;height:.35em;overflow:visible}
+.statement h2 .hl svg path{fill:none;stroke:var(--coral);stroke-width:7;stroke-linecap:round}
+.statement .word{display:inline-block}
+.stat-caption{margin-top:34px;font-size:17px;color:#41523B;max-width:560px;margin-left:auto;margin-right:auto;line-height:1.6}
+
+/* ---------- stages ---------- */
+.stages{padding:60px 24px 140px;max-width:1280px;margin:0 auto}
+.section-head{max-width:800px;margin:0 auto 70px;text-align:center}
+.kicker{
+  display:inline-block;font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;
+  padding:8px 16px;border-radius:var(--radius-pill);margin-bottom:22px;
+}
+.kicker.green{background:rgba(28,58,42,.08);color:var(--forest)}
+.section-head h2{font-size:clamp(36px,4.6vw,60px);line-height:1.05;letter-spacing:-.02em;color:var(--forest);font-weight:600}
+.section-head p{margin-top:20px;font-size:18px;line-height:1.6;color:#41523B}
+.stage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media(max-width:960px){.stage-grid{grid-template-columns:1fr;max-width:520px;margin:0 auto}}
+.stage-card{
+  border-radius:28px;padding:44px 36px 40px;position:relative;overflow:hidden;
+  min-height:480px;display:flex;flex-direction:column;
+  transition:transform .45s cubic-bezier(.34,1.3,.64,1), box-shadow .45s;
+}
+.stage-card:hover{transform:translateY(-10px);box-shadow:0 30px 60px -20px rgba(28,58,42,.25)}
+.sc1{background:var(--paper);border:1.5px solid rgba(28,58,42,.14)}
+.sc2{background:var(--marigold)}
+.sc3{background:var(--forest);color:var(--cream)}
+.stage-num{font-family:'Baloo 2',sans-serif;font-size:18px;opacity:.65;margin-bottom:14px}
+.stage-card h3{font-size:34px;font-weight:600;letter-spacing:-.01em;margin-bottom:14px}
+.stage-card p{font-size:16px;line-height:1.6;opacity:.85;max-width:34ch}
+.stage-art{margin-top:auto;padding-top:30px;display:flex;justify-content:center}
+.stage-art svg{width:150px;height:170px;overflow:visible}
+.stage-tag{
+  position:absolute;top:26px;right:26px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:6px 12px;border-radius:var(--radius-pill);
+}
+.sc1 .stage-tag{background:rgba(28,58,42,.08);color:var(--forest)}
+.sc2 .stage-tag{background:rgba(107,74,0,.14);color:#6B4A00}
+.sc3 .stage-tag{background:rgba(205,244,99,.18);color:var(--chartreuse)}
+
+/* ---------- mastery band ---------- */
+.mastery{
+  background:var(--forest);color:var(--cream);
+  border-radius:44px;max-width:1280px;margin:0 auto 140px;
+  padding:100px 60px;position:relative;overflow:hidden;
+}
+@media(max-width:768px){.mastery{padding:70px 28px;border-radius:32px}}
+.mastery-inner{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center;position:relative;z-index:2}
+@media(max-width:960px){.mastery-inner{grid-template-columns:1fr}}
+.mastery h2{font-size:clamp(36px,4.4vw,58px);line-height:1.06;letter-spacing:-.02em;font-weight:600}
+.mastery h2 em{color:var(--chartreuse)}
+.mastery p{margin-top:22px;font-size:17px;line-height:1.65;opacity:.85;max-width:46ch}
+.mastery-dial{display:flex;flex-direction:column;align-items:center;gap:18px}
+.dial-wrap{position:relative;width:min(320px,80vw);aspect-ratio:1}
+.dial-wrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.dial-val{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:'Baloo 2',sans-serif;
+}
+.dial-val .num{font-size:76px;font-weight:600;line-height:1;color:var(--chartreuse)}
+.dial-val .lbl{font-size:15px;font-family:'Instrument Sans',sans-serif;opacity:.75;margin-top:8px;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.mastery-deco{position:absolute;font-size:190px;opacity:.06;font-family:'Baloo 2',sans-serif;pointer-events:none;user-select:none}
+
+/* ---------- curriculum pills ---------- */
+.curriculum{padding:0 24px 140px;max-width:1280px;margin:0 auto}
+.pill-cloud{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;max-width:1000px;margin:0 auto}
+.skill-pill{
+  padding:16px 30px;border-radius:var(--radius-pill);
+  font-family:'Baloo 2',sans-serif;font-size:clamp(17px,2vw,24px);font-weight:500;
+  cursor:default;will-change:transform;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.skill-pill:hover{transform:scale(1.07) rotate(-2deg)}
+.sp-solid-green{background:var(--forest);color:var(--cream)}
+.sp-solid-char{background:var(--chartreuse);color:var(--forest)}
+.sp-solid-gold{background:var(--marigold);color:#5C3D00}
+.sp-solid-pink{background:var(--pink);color:#7C1E4D}
+.sp-solid-coral{background:var(--coral);color:#FFF3EC}
+.sp-line{border:1.5px solid var(--forest);color:var(--forest);background:transparent}
+.sp-line-coral{border:1.5px solid var(--coral);color:var(--coral);background:transparent}
+.curr-stats{display:flex;gap:70px;justify-content:center;margin-top:70px;flex-wrap:wrap;text-align:center}
+.curr-stat .big{font-family:'Baloo 2',sans-serif;font-size:clamp(44px,5vw,68px);font-weight:600;color:var(--forest);line-height:1}
+.curr-stat .big em{color:var(--coral)}
+.curr-stat .small{margin-top:10px;font-size:15px;color:#6B7A62;font-weight:500}
+
+/* ---------- tutor ---------- */
+.tutor{padding:0 24px 140px;max-width:1280px;margin:0 auto}
+.tutor-inner{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center}
+@media(max-width:960px){.tutor-inner{grid-template-columns:1fr}}
+.tutor-copy h2{font-size:clamp(36px,4.4vw,56px);line-height:1.06;letter-spacing:-.02em;color:var(--forest);font-weight:600}
+.tutor-copy h2 em{color:var(--coral)}
+.tutor-copy>p{margin-top:22px;font-size:17px;line-height:1.65;color:#41523B;max-width:48ch}
+.tutor-points{margin-top:34px;display:flex;flex-direction:column;gap:18px}
+.t-point{display:flex;gap:16px;align-items:flex-start}
+.t-point .ico{
+  flex:none;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
+}
+.t-point:nth-child(1) .ico{background:var(--chartreuse)}
+.t-point:nth-child(2) .ico{background:var(--pink)}
+.t-point:nth-child(3) .ico{background:var(--marigold)}
+.t-point h4{font-size:17px;font-weight:600;color:var(--forest);font-family:'Instrument Sans',sans-serif}
+.t-point p{font-size:15px;line-height:1.55;color:#5A6B52;margin-top:4px}
+.chat-window{
+  background:var(--paper);border:1.5px solid rgba(28,58,42,.14);border-radius:28px;
+  box-shadow:0 40px 80px -30px rgba(28,58,42,.25);
+  overflow:hidden;
+}
+.chat-head{
+  display:flex;align-items:center;gap:12px;padding:18px 24px;
+  border-bottom:1.5px solid rgba(28,58,42,.1);background:var(--cream);
+}
+.chat-head .avatar{width:38px;height:38px;border-radius:50%;background:var(--forest);display:grid;place-items:center}
+.chat-head .avatar svg{width:22px;height:22px}
+.chat-head .name{font-weight:600;font-size:15px;color:var(--forest)}
+.chat-head .status{font-size:12.5px;color:#6B7A62;display:flex;align-items:center;gap:6px}
+.chat-head .status::before{content:'';width:7px;height:7px;border-radius:50%;background:#5BAE6A}
+.chat-body{padding:26px 24px;display:flex;flex-direction:column;gap:16px;min-height:360px}
+.msg{max-width:82%;padding:14px 18px;border-radius:20px;font-size:15px;line-height:1.5;opacity:0;transform:translateY(14px)}
+.msg.bot{background:rgba(28,58,42,.07);color:var(--ink);border-bottom-left-radius:6px;align-self:flex-start}
+.msg.student{background:var(--forest);color:var(--cream);border-bottom-right-radius:6px;align-self:flex-end}
+.msg .hint{display:block;margin-top:6px;font-size:12.5px;color:var(--coral);font-weight:600;letter-spacing:.04em}
+.chat-note{
+  padding:14px 24px;border-top:1.5px solid rgba(28,58,42,.1);font-size:13px;color:#6B7A62;
+  display:flex;align-items:center;gap:8px;background:var(--cream);
+}
+
+/* ---------- teachers ---------- */
+.teachers{background:var(--paper);border-top:1.5px solid rgba(28,58,42,.1);border-bottom:1.5px solid rgba(28,58,42,.1);padding:130px 24px}
+.teachers-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center}
+@media(max-width:960px){.teachers-inner{grid-template-columns:1fr}}
+.dash-card{
+  background:var(--cream);border:1.5px solid rgba(28,58,42,.14);border-radius:28px;padding:28px;
+  box-shadow:0 40px 80px -30px rgba(28,58,42,.18);
+}
+.dash-query{
+  display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid rgba(28,58,42,.16);
+  border-radius:16px;padding:16px 20px;font-size:15px;color:var(--forest);
+}
+.dash-query .caret{width:2px;height:18px;background:var(--coral);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.dash-bars{display:flex;align-items:flex-end;gap:14px;height:190px;margin-top:30px;padding:0 8px}
+.dash-bar{flex:1;border-radius:10px 10px 4px 4px;position:relative;transform-origin:bottom}
+.dash-bar span{position:absolute;top:-26px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:700;color:var(--forest)}
+.dash-bar i{position:absolute;bottom:-26px;left:50%;transform:translateX(-50%);font-size:11.5px;font-style:normal;color:#6B7A62;white-space:nowrap}
+.dash-foot{margin-top:44px;display:flex;gap:10px;flex-wrap:wrap}
+.dash-chip{font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:var(--radius-pill);background:rgba(28,58,42,.07);color:var(--forest)}
+.teachers-copy h2{font-size:clamp(36px,4.4vw,56px);line-height:1.06;letter-spacing:-.02em;color:var(--forest);font-weight:600}
+.teachers-copy h2 em{color:var(--coral)}
+.teachers-copy>p{margin-top:22px;font-size:17px;line-height:1.65;color:#41523B;max-width:48ch}
+.teacher-list{margin-top:30px;display:flex;flex-direction:column;gap:0}
+.teacher-list .row{display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:1.5px solid rgba(28,58,42,.1);font-size:16px;font-weight:500;color:var(--forest)}
+.teacher-list .row:first-child{border-top:1.5px solid rgba(28,58,42,.1)}
+.teacher-list .row svg{flex:none}
+
+/* ---------- quotes ---------- */
+.quotes{padding:140px 24px}
+.quote-grid{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media(max-width:960px){.quote-grid{grid-template-columns:1fr;max-width:560px}}
+.quote-card{
+  border-radius:28px;padding:40px 34px;display:flex;flex-direction:column;gap:26px;min-height:340px;
+  transition:transform .45s cubic-bezier(.34,1.3,.64,1);
+}
+.quote-card:hover{transform:translateY(-8px) rotate(-.5deg)}
+.qc1{background:var(--pink)}
+.qc2{background:var(--chartreuse)}
+.qc3{background:var(--marigold)}
+.quote-card .mark{font-family:'Baloo 2',sans-serif;font-size:70px;line-height:.6;opacity:.4}
+.quote-card blockquote{font-family:'Baloo 2',sans-serif;font-size:20px;line-height:1.45;font-weight:500;letter-spacing:-.01em}
+.quote-card .who{margin-top:auto;display:flex;gap:14px;align-items:center}
+.quote-card .who .face{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:16px;color:var(--cream);flex:none}
+.qc1 .face{background:#7C1E4D}.qc2 .face{background:var(--forest)}.qc3 .face{background:#5C3D00}
+.quote-card .who .nm{font-weight:700;font-size:14.5px}
+.quote-card .who .rl{font-size:13px;opacity:.75;margin-top:2px}
+.qc1{color:#4A0E2B}.qc2{color:var(--forest)}.qc3{color:#4A3000}
+
+/* ---------- cta ---------- */
+.cta{
+  position:relative;margin:0 24px 24px;border-radius:44px;overflow:hidden;
+  background:var(--forest);color:var(--cream);text-align:center;
+  padding:140px 24px 150px;
+}
+#pollen2{position:absolute;inset:0;pointer-events:none}
+.cta h2{font-size:clamp(46px,7vw,104px);line-height:1;letter-spacing:-.03em;font-weight:600;position:relative;z-index:2}
+.cta h2 em{color:var(--chartreuse)}
+.cta p{margin-top:26px;font-size:18px;opacity:.85;position:relative;z-index:2;line-height:1.6}
+.cta .hero-ctas{position:relative;z-index:2}
+.cta .hand-note{position:absolute;z-index:2;font-size:26px;color:var(--marigold);transform:rotate(-6deg)}
+
+/* ---------- footer ---------- */
+footer{padding:70px 40px 40px;display:flex;flex-direction:column;gap:50px}
+.foot-top{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap}
+.foot-brand p{margin-top:14px;font-size:14.5px;color:#6B7A62;max-width:28ch;line-height:1.55}
+.foot-cols{display:flex;gap:80px;flex-wrap:wrap}
+.foot-col h5{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#6B7A62;margin-bottom:18px}
+.foot-col a{display:block;font-size:15px;font-weight:500;color:var(--forest);margin-bottom:12px;transition:color .25s}
+.foot-col a:hover{color:var(--coral)}
+.foot-bottom{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;border-top:1.5px solid rgba(28,58,42,.12);padding-top:28px;font-size:13.5px;color:#6B7A62}
+.big-word{
+  font-family:'Baloo 2',sans-serif;font-weight:600;
+  font-size:clamp(80px,16vw,260px);line-height:.9;color:rgba(28,58,42,.08);
+  text-align:center;user-select:none;letter-spacing:-.04em;margin-top:-20px;
+}
+
+/* sans-serif: no synthesized obliques — accent with color/weight instead */
+em,.stage-num,.marquee-item,.mastery-deco,.big-word,.statement h2 .hl,.quote-card .mark{font-style:normal}
+.hero h1 em{font-weight:700;color:var(--coral)}
+.statement h2 .hl{font-weight:700;color:var(--coral)}
+.mastery h2 em,.cta h2 em{font-weight:700}
+.tutor-copy h2 em,.teachers-copy h2 em{font-weight:700}
+
+/* ---------- hero garden ---------- */
+.garden{
+  position:absolute;bottom:-4px;left:0;width:100%;height:190px;pointer-events:none;z-index:1;
+}
+.garden svg{width:100%;height:100%;display:block;overflow:visible}
+.hero>*:not(.garden):not(#pollen):not(.float-pill){position:relative;z-index:2}
+.float-pill{z-index:2}
+@media(max-width:700px){.garden{height:120px}}
+
+/* reveal helpers */
+.rv{opacity:0;transform:translateY(44px)}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<nav id="nav">
+  <a class="logo" href="#">
+    <svg viewBox="0 0 40 40" fill="none">
+      <g id="logo-flower">
+        <circle cx="20" cy="10" r="7" fill="#EE5B2E" stroke="#1C3A2A" stroke-width="1.8"/>
+        <circle cx="29" cy="16.5" r="7" fill="#F5C33B" stroke="#1C3A2A" stroke-width="1.8"/>
+        <circle cx="25.5" cy="27" r="7" fill="#F5AFCE" stroke="#1C3A2A" stroke-width="1.8"/>
+        <circle cx="14.5" cy="27" r="7" fill="#CDF463" stroke="#1C3A2A" stroke-width="1.8"/>
+        <circle cx="11" cy="16.5" r="7" fill="#1C3A2A" stroke="#1C3A2A" stroke-width="1.8"/>
+        <circle cx="20" cy="19.5" r="5.5" fill="#FBF3E5" stroke="#1C3A2A" stroke-width="1.8"/>
+      </g>
+    </svg>
+    bloomy
+  </a>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#curriculum">Curriculum</a>
+    <a href="#tutor">BloomyBot</a>
+    <a href="#teachers">For teachers</a>
+    <a href="#" class="btn">Request a demo <span class="arrow">→</span></a>
+  </div>
+</nav>
+
+<header class="hero">
+  <canvas id="pollen"></canvas>
+
+  <div class="float-pill fp1">Fractions ✓ mastered</div>
+  <div class="float-pill fp2">Reading level ↑ 2 grades</div>
+  <div class="float-pill fp3">Main idea &amp; details</div>
+  <div class="float-pill fp4">92% on Summit</div>
+
+  <div class="hero-eyebrow rv"><span class="dot"></span> Mastery learning, powered by AI</div>
+  <h1 id="hero-title">
+    <span class="line"><span>Every student,</span></span>
+    <span class="line"><span>in <em>full</em><span class="flower-slot"><svg viewBox="0 0 40 40" id="hero-flower" style="width:100%;height:100%;overflow:visible">
+      <g>
+        <circle cx="20" cy="10" r="7" fill="#EE5B2E" stroke="#1C3A2A" stroke-width="1.8"/>
+        <circle cx="29" cy="16.5" r="7" fill="#F5C33B" stroke="#1C3A2A" stroke-width="1.8"/>
+        <circle cx="25.5" cy="27" r="7" fill="#F5AFCE" stroke="#1C3A2A" stroke-width="1.8"/>
+        <circle cx="14.5" cy="27" r="7" fill="#CDF463" stroke="#1C3A2A" stroke-width="1.8"/>
+        <circle cx="11" cy="16.5" r="7" fill="#5BAE6A" stroke="#1C3A2A" stroke-width="1.8"/>
+        <circle cx="20" cy="19.5" r="5.5" fill="#FBF3E5" stroke="#1C3A2A" stroke-width="1.8"/>
+      </g>
+    </svg></span><em>bloom.</em></span></span>
+  </h1>
+  <p class="hero-sub rv">Bloomy teaches each student exactly what they need to know, when they need to know it — with adaptive lessons, a Socratic AI tutor, and a 90% bar for true mastery.</p>
+  <div class="hero-ctas rv">
+    <a href="#" class="btn big">Request a demo <span class="arrow">→</span></a>
+    <a href="#how" class="link-btn">See how it works</a>
+  </div>
+  <p class="hero-note rv"><span class="hand">grounded in learning science&nbsp;</span> · Bloom · Vygotsky · Sweller</p>
+
+  <!-- animated garden -->
+  <div class="garden" aria-hidden="true">
+    <svg viewBox="0 0 1440 190" preserveAspectRatio="xMidYMax meet" fill="none">
+      <!-- grass tufts -->
+      <g stroke="#9DBE8D" stroke-width="3" stroke-linecap="round">
+        <path d="M60 188 C 58 176 62 168 66 162"/><path d="M72 188 C 72 178 70 172 66 166"/>
+        <path d="M330 188 C 328 178 332 170 336 164"/><path d="M342 188 C 342 180 340 174 336 168"/>
+        <path d="M700 188 C 698 178 702 170 706 164"/><path d="M712 188 C 712 180 710 174 706 168"/>
+        <path d="M1010 188 C 1008 176 1012 168 1016 162"/><path d="M1022 188 C 1022 178 1020 172 1016 166"/>
+        <path d="M1330 188 C 1328 178 1332 170 1336 164"/><path d="M1342 188 C 1342 180 1340 174 1336 168"/>
+      </g>
+      <!-- flowers: each .gflower sways from its base -->
+      <g class="gflower" data-sway="4">
+        <path class="gstem" d="M140 190 C 142 150 136 120 140 92" stroke="#1C3A2A" stroke-width="4" stroke-linecap="round"/>
+        <path d="M140 150 C 124 146 118 132 120 124 C 132 128 139 138 140 150 Z" fill="#9DBE8D" stroke="#1C3A2A" stroke-width="1.8" stroke-linejoin="round"/>
+        <g class="ghead" transform="translate(140,84)">
+          <circle cx="0" cy="-11" r="9" fill="#EE5B2E" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="10.5" cy="-3.4" r="9" fill="#F5C33B" stroke="#1C3A2A" stroke-width="1.8"/>
+          <circle cx="6.5" cy="8.9" r="9" fill="#F5AFCE" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="-6.5" cy="8.9" r="9" fill="#CDF463" stroke="#1C3A2A" stroke-width="1.8"/>
+          <circle cx="-10.5" cy="-3.4" r="9" fill="#9DBE8D" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="0" cy="0" r="6.5" fill="#FBF3E5" stroke="#1C3A2A" stroke-width="1.8"/>
+        </g>
+      </g>
+      <g class="gflower" data-sway="-5">
+        <path class="gstem" d="M420 190 C 418 160 424 140 420 118" stroke="#1C3A2A" stroke-width="4" stroke-linecap="round"/>
+        <path d="M420 160 C 436 156 442 142 440 134 C 428 138 421 148 420 160 Z" fill="#9DBE8D" stroke="#1C3A2A" stroke-width="1.8" stroke-linejoin="round"/>
+        <g class="ghead" transform="translate(420,110)">
+          <circle cx="0" cy="-9" r="7.5" fill="#F5AFCE" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="8.6" cy="-2.8" r="7.5" fill="#CDF463" stroke="#1C3A2A" stroke-width="1.8"/>
+          <circle cx="5.3" cy="7.3" r="7.5" fill="#F5C33B" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="-5.3" cy="7.3" r="7.5" fill="#EE5B2E" stroke="#1C3A2A" stroke-width="1.8"/>
+          <circle cx="-8.6" cy="-2.8" r="7.5" fill="#9DBE8D" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="0" cy="0" r="5.4" fill="#FBF3E5" stroke="#1C3A2A" stroke-width="1.8"/>
+        </g>
+      </g>
+      <g class="gflower" data-sway="6">
+        <path class="gstem" d="M980 190 C 982 154 976 128 980 100" stroke="#1C3A2A" stroke-width="4" stroke-linecap="round"/>
+        <path d="M980 152 C 964 148 958 134 960 126 C 972 130 979 140 980 152 Z" fill="#9DBE8D" stroke="#1C3A2A" stroke-width="1.8" stroke-linejoin="round"/>
+        <g class="ghead" transform="translate(980,92)">
+          <circle cx="0" cy="-10" r="8.4" fill="#CDF463" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="9.5" cy="-3" r="8.4" fill="#EE5B2E" stroke="#1C3A2A" stroke-width="1.8"/>
+          <circle cx="5.9" cy="8.1" r="8.4" fill="#F5C33B" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="-5.9" cy="8.1" r="8.4" fill="#F5AFCE" stroke="#1C3A2A" stroke-width="1.8"/>
+          <circle cx="-9.5" cy="-3" r="8.4" fill="#9DBE8D" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="0" cy="0" r="6" fill="#FBF3E5" stroke="#1C3A2A" stroke-width="1.8"/>
+        </g>
+      </g>
+      <g class="gflower" data-sway="-4">
+        <path class="gstem" d="M1280 190 C 1278 162 1284 144 1280 124 " stroke="#1C3A2A" stroke-width="4" stroke-linecap="round"/>
+        <path d="M1280 162 C 1296 158 1302 144 1300 136 C 1288 140 1281 150 1280 162 Z" fill="#9DBE8D" stroke="#1C3A2A" stroke-width="1.8" stroke-linejoin="round"/>
+        <g class="ghead" transform="translate(1280,116)">
+          <circle cx="0" cy="-8.4" r="7" fill="#F5C33B" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="8" cy="-2.6" r="7" fill="#F5AFCE" stroke="#1C3A2A" stroke-width="1.8"/>
+          <circle cx="4.9" cy="6.8" r="7" fill="#EE5B2E" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="-4.9" cy="6.8" r="7" fill="#CDF463" stroke="#1C3A2A" stroke-width="1.8"/>
+          <circle cx="-8" cy="-2.6" r="7" fill="#9DBE8D" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="0" cy="0" r="5" fill="#FBF3E5" stroke="#1C3A2A" stroke-width="1.8"/>
+        </g>
+      </g>
+      <!-- sprout between flowers -->
+      <g class="gflower" data-sway="3">
+        <path class="gstem" d="M620 190 C 620 176 618 166 620 156" stroke="#1C3A2A" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M620 158 C 608 154 604 144 606 138 C 615 141 619 149 620 158 Z" fill="#5BAE6A" stroke="#1C3A2A" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M620 158 C 632 154 636 144 634 138 C 625 141 621 149 620 158 Z" fill="#9DBE8D" stroke="#1C3A2A" stroke-width="1.8" stroke-linejoin="round"/>
+      </g>
+      <g class="gflower" data-sway="-3">
+        <path class="gstem" d="M1150 190 C 1150 178 1148 170 1150 160" stroke="#1C3A2A" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M1150 162 C 1140 158 1136 150 1138 144 C 1146 147 1149 154 1150 162 Z" fill="#5BAE6A" stroke="#1C3A2A" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M1150 162 C 1160 158 1164 150 1162 144 C 1154 147 1151 154 1150 162 Z" fill="#9DBE8D" stroke="#1C3A2A" stroke-width="1.8" stroke-linejoin="round"/>
+      </g>
+    </svg>
+  </div>
+</header>
+
+<div class="marquee">
+  <div class="marquee-track" id="marquee-track">
+    <!-- items injected by JS -->
+  </div>
+</div>
+
+<section class="trust">
+  <p class="label rv">Growing in classrooms across the country</p>
+  <div class="trust-row rv">
+    <span>Baystate Academy</span><span>·</span>
+    <span>Leland School District</span><span>·</span>
+    <span>Unbound Stockton</span><span>·</span>
+    <span>Edna M. Scott Elementary</span>
+  </div>
+</section>
+
+<section class="statement">
+  <h2 id="statement-text">In most classrooms, the lesson moves on whether you're ready or not. Bloomy waits for <span class="hl">mastery<svg viewBox="0 0 120 12" preserveAspectRatio="none"><path class="scribble" d="M3 8 C 30 3, 55 10, 80 5 S 112 7, 117 5"/></svg></span> — then moves you forward.</h2>
+  <p class="stat-caption rv">Students advance only after proving they truly own a skill. No gaps swept under the rug. No one left guessing.</p>
+</section>
+
+<section class="stages" id="how">
+  <div class="section-head">
+    <span class="kicker green rv">How a skill grows</span>
+    <h2 class="rv">From first seed<br>to full bloom</h2>
+    <p class="rv">Every one of Bloomy's skills is a ~25-minute journey through three stages — modeled on how mastery actually takes root.</p>
+  </div>
+  <div class="stage-grid">
+    <div class="stage-card sc1 rv">
+      <span class="stage-tag">Stage 01</span>
+      <p class="stage-num">The seed</p>
+      <h3>Base Camp</h3>
+      <p>Clear concept instruction with worked examples and think-aloud modeling, then a quick check for understanding.</p>
+      <div class="stage-art">
+        <svg viewBox="0 0 150 170">
+          <path class="grow-stem" d="M75 165 C 75 140, 72 130, 75 110" stroke="#1C3A2A" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <g class="seed-leaves">
+            <path d="M75 112 C 55 105, 48 88, 52 78 C 68 82, 76 95, 75 112" fill="#9DBE8D" stroke="#1C3A2A" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M75 112 C 95 105, 102 88, 98 78 C 82 82, 74 95, 75 112" fill="#5BAE6A" stroke="#1C3A2A" stroke-width="1.8" stroke-linejoin="round"/>
+          </g>
+          <ellipse cx="75" cy="165" rx="34" ry="6" fill="rgba(28,58,42,.12)"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stage-card sc2 rv">
+      <span class="stage-tag">Stage 02</span>
+      <p class="stage-num">The sprout</p>
+      <h3>Climb</h3>
+      <p>Adaptive guided practice that adjusts difficulty in real time — always in that sweet spot between too easy and too hard.</p>
+      <div class="stage-art">
+        <svg viewBox="0 0 150 170">
+          <path class="grow-stem" d="M75 165 C 76 130, 70 105, 75 62" stroke="#1C3A2A" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <g class="seed-leaves">
+            <path d="M75 120 C 52 115, 43 96, 47 85 C 65 89, 75 102, 75 120" fill="#5C3D00" opacity=".85" stroke="#1C3A2A" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M75 96 C 98 91, 107 72, 103 61 C 85 65, 75 78, 75 96" fill="#7A5200" opacity=".85" stroke="#1C3A2A" stroke-width="1.8" stroke-linejoin="round"/>
+          </g>
+          <circle class="bud" cx="75" cy="56" r="13" fill="#EE5B2E" stroke="#1C3A2A" stroke-width="1.8"/>
+          <circle class="bud" cx="75" cy="56" r="6" fill="#FBF3E5" stroke="#1C3A2A" stroke-width="1.8"/>
+          <ellipse cx="75" cy="165" rx="34" ry="6" fill="rgba(92,61,0,.18)"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stage-card sc3 rv">
+      <span class="stage-tag">Stage 03</span>
+      <p class="stage-num">The bloom</p>
+      <h3>Summit</h3>
+      <p>An independent mastery assessment — no hints, no AI help. Score 90% or better and the skill is truly yours.</p>
+      <div class="stage-art">
+        <svg viewBox="0 0 150 170">
+          <path class="grow-stem" d="M75 165 C 77 130, 71 100, 75 78" stroke="#CDF463" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <g class="seed-leaves">
+            <path d="M75 130 C 52 125, 43 106, 47 95 C 65 99, 75 112, 75 130" fill="#9DBE8D" stroke="#1C3A2A" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M75 112 C 98 107, 107 88, 103 77 C 85 81, 75 94, 75 112" fill="#5BAE6A" stroke="#1C3A2A" stroke-width="1.8" stroke-linejoin="round"/>
+          </g>
+          <g class="bloom-petals" transform="translate(75,48)">
+            <circle cx="0" cy="-16" r="12" fill="#EE5B2E" stroke="#1C3A2A" stroke-width="1.8"/>
+            <circle cx="15" cy="-5" r="12" fill="#F5C33B" stroke="#1C3A2A" stroke-width="1.8"/>
+            <circle cx="9.5" cy="13" r="12" fill="#F5AFCE" stroke="#1C3A2A" stroke-width="1.8"/>
+            <circle cx="-9.5" cy="13" r="12" fill="#CDF463" stroke="#1C3A2A" stroke-width="1.8"/>
+            <circle cx="-15" cy="-5" r="12" fill="#9DBE8D" stroke="#1C3A2A" stroke-width="1.8"/>
+            <circle cx="0" cy="0" r="9" fill="#FBF3E5" stroke="#1C3A2A" stroke-width="1.8"/>
+          </g>
+          <ellipse cx="75" cy="165" rx="34" ry="6" fill="rgba(205,244,99,.15)"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mastery">
+  <span class="mastery-deco" style="top:-40px;left:30px">m</span>
+  <span class="mastery-deco" style="bottom:-60px;right:40px">90</span>
+  <div class="mastery-inner">
+    <div>
+      <span class="kicker rv" style="background:rgba(205,244,99,.15);color:var(--chartreuse)">The mastery bar</span>
+      <h2 class="rv">Ninety percent,<br>or <em>we keep growing.</em></h2>
+      <p class="rv">Most programs let students drift forward on 60s and 70s — and the gaps compound for years. Bloomy holds a 90% mastery threshold on every skill, because the next concept deserves solid ground to grow in.</p>
+      <p class="rv" style="margin-top:16px;font-size:15px;opacity:.6">Smart diagnostics — including i-Ready and NWEA MAP integration — find each student's true starting point across a 6-domain ELA map and 5 math strands.</p>
+    </div>
+    <div class="mastery-dial rv">
+      <div class="dial-wrap">
+        <svg viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="86" fill="none" stroke="rgba(251,243,229,.12)" stroke-width="14"/>
+          <circle id="dial-arc" cx="100" cy="100" r="86" fill="none" stroke="#CDF463" stroke-width="14" stroke-linecap="round"
+            stroke-dasharray="540.35" stroke-dashoffset="540.35"/>
+        </svg>
+        <div class="dial-val"><span class="num"><span id="dial-num">0</span>%</span><span class="lbl">to advance</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="curriculum" id="curriculum">
+  <div class="section-head">
+    <span class="kicker green rv">The curriculum</span>
+    <h2 class="rv">Nearly 2,000 skills,<br>each one worth mastering</h2>
+    <p class="rv">Standards-aligned to Common Core and state frameworks, K–12, with question formats that mirror the tests that matter.</p>
+  </div>
+  <div class="pill-cloud" id="pill-cloud">
+    <span class="skill-pill sp-solid-green">Literary texts</span>
+    <span class="skill-pill sp-line">Fractions &amp; ratios</span>
+    <span class="skill-pill sp-solid-char">Informational texts</span>
+    <span class="skill-pill sp-solid-pink">Vocabulary</span>
+    <span class="skill-pill sp-line-coral">Algebraic thinking</span>
+    <span class="skill-pill sp-solid-gold">Grammar</span>
+    <span class="skill-pill sp-line">Geometry</span>
+    <span class="skill-pill sp-solid-coral">Writing</span>
+    <span class="skill-pill sp-solid-char">Mechanics</span>
+    <span class="skill-pill sp-line">Number sense</span>
+    <span class="skill-pill sp-solid-pink">Reading fluency</span>
+    <span class="skill-pill sp-solid-green">Data &amp; statistics</span>
+    <span class="skill-pill sp-line-coral">Essay structure</span>
+    <span class="skill-pill sp-solid-gold">Measurement</span>
+  </div>
+  <div class="curr-stats">
+    <div class="curr-stat rv"><div class="big" data-count="700">0</div><div class="small">ELA skills across 6 domains</div></div>
+    <div class="curr-stat rv"><div class="big" data-count="1275">0</div><div class="small">Math skills across 5 strands</div></div>
+    <div class="curr-stat rv"><div class="big"><em>K–12</em></div><div class="small">Standards-aligned, every grade</div></div>
+  </div>
+</section>
+
+<section class="tutor" id="tutor">
+  <div class="tutor-inner">
+    <div class="tutor-copy">
+      <span class="kicker green rv">Meet BloomyBot</span>
+      <h2 class="rv">A tutor that asks,<br><em>never tells.</em></h2>
+      <p class="rv">BloomyBot is a Socratic AI tutor. It never hands over the answer — it diagnoses the misconception, then walks students through structured scaffolding until the reasoning is theirs.</p>
+      <div class="tutor-points">
+        <div class="t-point rv">
+          <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1C3A2A" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
+          <div><h4>Diagnoses misconceptions</h4><p>Finds the exact wrong turn in a student's thinking — not just the wrong answer.</p></div>
+        </div>
+        <div class="t-point rv">
+          <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7C1E4D" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v18M5 10l7-7 7 7"/></svg></div>
+          <div><h4>Scaffolds the reasoning</h4><p>Three levels of hints that guide students up — without carrying them.</p></div>
+        </div>
+        <div class="t-point rv">
+          <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5C3D00" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="5" width="16" height="14" rx="3"/><path d="M8 3v4M16 3v4"/></svg></div>
+          <div><h4>Locked during Summit</h4><p>Assessments are truly independent — and every conversation is visible to teachers.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-window rv" id="chat-window">
+      <div class="chat-head">
+        <div class="avatar"><svg viewBox="0 0 40 40"><g transform="scale(.8) translate(5,5)"><circle cx="20" cy="10" r="7" fill="#EE5B2E" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="29" cy="16.5" r="7" fill="#F5C33B" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="25.5" cy="27" r="7" fill="#F5AFCE" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="14.5" cy="27" r="7" fill="#CDF463" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="11" cy="16.5" r="7" fill="#9DBE8D" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="20" cy="19.5" r="5.5" fill="#FBF3E5" stroke="#1C3A2A" stroke-width="1.8"/></g></svg></div>
+        <div>
+          <div class="name">BloomyBot</div>
+          <div class="status">Working on: Comparing fractions</div>
+        </div>
+      </div>
+      <div class="chat-body" id="chat-body">
+        <div class="msg student">Is 3/8 bigger than 2/5? I said yes because 3 is bigger than 2.</div>
+        <div class="msg bot">Interesting thinking! You compared the tops. But what do the bottoms of those fractions tell us about the size of each piece? 🤔</div>
+        <div class="msg student">Ohh… eighths are smaller pieces than fifths?</div>
+        <div class="msg bot">Exactly. So if we made both fractions out of 40 pieces — how many fortieths would each be?<span class="hint">Scaffold level 2 · not giving the answer</span></div>
+        <div class="msg student">15/40 and 16/40… so 2/5 is bigger! I had it backwards.</div>
+      </div>
+      <div class="chat-note">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7A62" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        Conversation logged for teacher visibility · locked during assessments
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="teachers" id="teachers">
+  <div class="teachers-inner">
+    <div class="dash-card rv">
+      <div class="dash-query">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EE5B2E" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>
+        <span id="query-text"></span><span class="caret"></span>
+      </div>
+      <div class="dash-bars">
+        <div class="dash-bar" style="background:#9DBE8D;height:52%"><span>72%</span><i>Period 1</i></div>
+        <div class="dash-bar" style="background:#CDF463;height:78%"><span>88%</span><i>Period 2</i></div>
+        <div class="dash-bar" style="background:#F5C33B;height:40%"><span>61%</span><i>Period 3</i></div>
+        <div class="dash-bar" style="background:#EE5B2E;height:64%"><span>79%</span><i>Period 4</i></div>
+        <div class="dash-bar" style="background:#F5AFCE;height:88%"><span>93%</span><i>Period 5</i></div>
+      </div>
+      <div class="dash-foot">
+        <span class="dash-chip">✦ 4 students ready to group on main idea</span>
+        <span class="dash-chip">↑ 12 skills mastered this week</span>
+      </div>
+    </div>
+    <div class="teachers-copy">
+      <span class="kicker green rv">For teachers</span>
+      <h2 class="rv">Just ask for<br>the data <em>you need.</em></h2>
+      <p class="rv">No dashboard spelunking. Type a question in plain English — "who's stuck on comparing fractions?" — and Bloomy answers with live, actionable insight.</p>
+      <div class="teacher-list">
+        <div class="row rv"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EE5B2E" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Real-time class monitoring</div>
+        <div class="row rv"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EE5B2E" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Smart skill-based grouping</div>
+        <div class="row rv"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EE5B2E" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Every BloomyBot conversation, visible</div>
+        <div class="row rv"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EE5B2E" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> i-Ready &amp; NWEA MAP integration</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="quotes">
+  <div class="section-head">
+    <span class="kicker green rv">From the field</span>
+    <h2 class="rv">Planted in real classrooms</h2>
+  </div>
+  <div class="quote-grid">
+    <div class="quote-card qc1 rv">
+      <span class="mark">"</span>
+      <blockquote>Students are steadily progressing — some now working at 11th- or 12th-grade level in domains. They're invested in the work.</blockquote>
+      <div class="who">
+        <div class="face">KC</div>
+        <div><div class="nm">Kellie Carlucci</div><div class="rl">Director of Curriculum, Baystate Academy</div></div>
+      </div>
+    </div>
+    <div class="quote-card qc2 rv">
+      <span class="mark">"</span>
+      <blockquote>Bloomy helps us differentiate while keeping students connected to grade-level expectations.</blockquote>
+      <div class="who">
+        <div class="face">JT</div>
+        <div><div class="nm">Jessica Thomas</div><div class="rl">Principal, Edna M. Scott Elementary</div></div>
+      </div>
+    </div>
+    <div class="quote-card qc3 rv">
+      <span class="mark">"</span>
+      <blockquote>Our intervention block turned positive — students get on-level ELA learning through genuinely high-quality texts.</blockquote>
+      <div class="who">
+        <div class="face">PH</div>
+        <div><div class="nm">Phillip Hon</div><div class="rl">Founder, Unbound Stockton Community School</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <canvas id="pollen2"></canvas>
+  <span class="hand-note hand" style="top:16%;left:12%">let's grow →</span>
+  <h2 class="rv">Ready to see<br>your students <em>bloom?</em></h2>
+  <p class="rv">A 30-minute demo. Your curriculum, your data, your questions.</p>
+  <div class="hero-ctas rv" style="margin-top:44px">
+    <a href="#" class="btn big light">Request a demo <span class="arrow">→</span></a>
+    <a href="mailto:hello@bloomylearning.com" class="link-btn" style="color:var(--cream)">hello@bloomylearning.com</a>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-top">
+    <div class="foot-brand">
+      <a class="logo" href="#">
+        <svg viewBox="0 0 40 40" fill="none"><g><circle cx="20" cy="10" r="7" fill="#EE5B2E" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="29" cy="16.5" r="7" fill="#F5C33B" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="25.5" cy="27" r="7" fill="#F5AFCE" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="14.5" cy="27" r="7" fill="#CDF463" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="11" cy="16.5" r="7" fill="#1C3A2A" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="20" cy="19.5" r="5.5" fill="#FBF3E5" stroke="#1C3A2A" stroke-width="1.8"/></g></svg>
+        bloomy
+      </a>
+      <p>Mastery learning for every student. Designed in San Francisco, California.</p>
+    </div>
+    <div class="foot-cols">
+      <div class="foot-col">
+        <h5>Product</h5>
+        <a href="#how">How it works</a>
+        <a href="#curriculum">Curriculum</a>
+        <a href="#tutor">BloomyBot</a>
+        <a href="#teachers">For teachers</a>
+      </div>
+      <div class="foot-col">
+        <h5>Schools</h5>
+        <a href="#">For districts</a>
+        <a href="#">For families</a>
+        <a href="#">Research base</a>
+        <a href="#">Accessibility</a>
+      </div>
+      <div class="foot-col">
+        <h5>Company</h5>
+        <a href="#">About</a>
+        <a href="mailto:hello@bloomylearning.com">Contact</a>
+        <a href="#">Privacy</a>
+      </div>
+    </div>
+  </div>
+  <div class="big-word">bloomy</div>
+  <div class="foot-bottom">
+    <span>© 2026 Bloomy Learning, Inc.</span>
+    <span>Made with care — and a 90% mastery bar.</span>
+  </div>
+</footer>
+
+<script src="../shared/vendor/gsap.min.js"></script>
+<script src="../shared/vendor/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ---------- nav ---------- */
+const nav = document.getElementById('nav');
+addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>40),{passive:true});
+
+/* ---------- hero intro ---------- */
+const introTl = gsap.timeline({defaults:{ease:'power4.out'}});
+introTl
+  .from('.hero h1 .line > span',{yPercent:110,duration:1.2,stagger:.12},.1)
+  .fromTo('#hero-flower g',{scale:0,rotation:-120,transformOrigin:'50% 50%'},{scale:1,rotation:0,duration:1.4,ease:'elastic.out(1,.5)'},.7)
+  .to('.hero-eyebrow',{opacity:1,y:0,duration:.8},.3)
+  .to('.hero-sub',{opacity:1,y:0,duration:.9},.9)
+  .to('.hero-ctas',{opacity:1,y:0,duration:.9},1.05)
+  .to('.hero-note',{opacity:1,y:0,duration:.9},1.2)
+  .from('.float-pill',{scale:0,opacity:0,duration:1,stagger:.09,ease:'back.out(2)'},1.0);
+
+/* garden: rise up, then sway forever */
+document.querySelectorAll('.gflower').forEach((f,i)=>{
+  const sway=+f.dataset.sway||4;
+  gsap.from(f,{y:60,opacity:0,duration:1.2,delay:1.2+i*.12,ease:'power3.out'});
+  gsap.to(f,{rotation:sway,transformOrigin:'50% 100%',duration:2.4+i*.35,yoyo:true,repeat:-1,ease:'sine.inOut',delay:1.6});
+  const head=f.querySelector('.ghead');
+  if(head)gsap.to(head,{rotation:i%2?360:-360,transformOrigin:'50% 50%',duration:50+i*8,repeat:-1,ease:'none'});
+});
+
+/* continuous flower spin */
+gsap.to('#hero-flower g',{rotation:360,transformOrigin:'50% 50%',duration:40,repeat:-1,ease:'none',delay:2.2});
+gsap.to('#logo-flower',{rotation:360,transformOrigin:'50% 50%',duration:30,repeat:-1,ease:'none'});
+
+/* float pills gentle drift + parallax */
+document.querySelectorAll('.float-pill').forEach((p,i)=>{
+  gsap.to(p,{y:'+=14',duration:2.4+i*.4,yoyo:true,repeat:-1,ease:'sine.inOut'});
+});
+addEventListener('mousemove',e=>{
+  const dx=(e.clientX/innerWidth-.5), dy=(e.clientY/innerHeight-.5);
+  gsap.to('.fp1',{x:dx*30,duration:1}); gsap.to('.fp2',{x:dx*-24,duration:1});
+  gsap.to('.fp3',{x:dx*22,duration:1}); gsap.to('.fp4',{x:dx*-30,duration:1});
+});
+
+/* ---------- marquee ---------- */
+const items = ['Adaptive lessons','Socratic AI tutoring','90% mastery threshold','K–12 · ELA · Math · Writing','Standards-aligned','Nearly 2,000 skills','Learning-science grounded'];
+const track = document.getElementById('marquee-track');
+const flower = '<svg viewBox="0 0 40 40"><g><circle cx="20" cy="10" r="7" fill="#EE5B2E" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="29" cy="16.5" r="7" fill="#F5C33B" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="25.5" cy="27" r="7" fill="#F5AFCE" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="14.5" cy="27" r="7" fill="#CDF463" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="11" cy="16.5" r="7" fill="#9DBE8D" stroke="#1C3A2A" stroke-width="1.8"/><circle cx="20" cy="19.5" r="5.5" fill="#1C3A2A" stroke="#1C3A2A" stroke-width="1.8"/></g></svg>';
+track.innerHTML = Array(3).fill(items.map(t=>`<span class="marquee-item">${t} ${flower}</span>`).join('')).join('');
+gsap.to(track,{xPercent:-33.333,duration:30,repeat:-1,ease:'none'});
+
+/* ---------- generic reveals ---------- */
+document.querySelectorAll('.rv').forEach(el=>{
+  if(el.closest('.hero'))return;
+  gsap.to(el,{opacity:1,y:0,duration:1.1,ease:'power3.out',
+    scrollTrigger:{trigger:el,start:'top 88%'}});
+});
+
+/* ---------- statement word-by-word color ---------- */
+const st = document.getElementById('statement-text');
+(function(){
+  const hl = st.querySelector('.hl');
+  const frag = document.createDocumentFragment();
+  st.childNodes.forEach(n=>{
+    if(n.nodeType===3){
+      n.textContent.split(/\s+/).filter(Boolean).forEach(w=>{
+        const s=document.createElement('span');s.className='word';s.textContent=w;
+        frag.appendChild(s);frag.appendChild(document.createTextNode(' '));
+      });
+    } else frag.appendChild(n.cloneNode(true));
+  });
+  st.innerHTML='';st.appendChild(frag);
+})();
+gsap.fromTo('#statement-text .word, #statement-text .hl',{opacity:.14},{opacity:1,stagger:.06,ease:'none',
+  scrollTrigger:{trigger:'.statement',start:'top 75%',end:'top 20%',scrub:true}});
+const scribble=document.querySelector('.scribble');
+if(scribble){const len=scribble.getTotalLength();
+  gsap.set(scribble,{strokeDasharray:len,strokeDashoffset:len});
+  gsap.to(scribble,{strokeDashoffset:0,duration:1,ease:'power2.inOut',
+    scrollTrigger:{trigger:'.statement',start:'top 35%'}});}
+
+/* ---------- stage cards: grow the plants ---------- */
+document.querySelectorAll('.stage-card').forEach((card,i)=>{
+  const stem=card.querySelector('.grow-stem');
+  const len=stem.getTotalLength();
+  gsap.set(stem,{strokeDasharray:len,strokeDashoffset:len});
+  const leaves=card.querySelectorAll('.seed-leaves path');
+  const petals=card.querySelectorAll('.bloom-petals circle');
+  const buds=card.querySelectorAll('.bud');
+  const tl=gsap.timeline({scrollTrigger:{trigger:card,start:'top 75%'}});
+  tl.to(stem,{strokeDashoffset:0,duration:1,ease:'power2.out',delay:i*.15})
+    .from(leaves,{scale:0,transformOrigin:'50% 100%',duration:.7,stagger:.12,ease:'back.out(2)'},'-=.3');
+  if(buds.length)tl.from(buds,{scale:0,transformOrigin:'50% 50%',duration:.6,ease:'back.out(3)'},'-=.2');
+  if(petals.length)tl.from(petals,{scale:0,transformOrigin:'0 0',duration:.7,stagger:.08,ease:'back.out(2.5)'},'-=.2');
+});
+
+/* ---------- mastery dial ---------- */
+const arc=document.getElementById('dial-arc'), C=540.35;
+ScrollTrigger.create({trigger:'.mastery-dial',start:'top 75%',once:true,onEnter:()=>{
+  gsap.to(arc,{strokeDashoffset:C*(1-.9),duration:2,ease:'power3.inOut'});
+  gsap.to({v:0},{v:90,duration:2,ease:'power3.inOut',onUpdate:function(){
+    document.getElementById('dial-num').textContent=Math.round(this.targets()[0].v);}});
+}});
+
+/* ---------- counters ---------- */
+document.querySelectorAll('[data-count]').forEach(el=>{
+  const target=+el.dataset.count;
+  ScrollTrigger.create({trigger:el,start:'top 85%',once:true,onEnter:()=>{
+    gsap.to({v:0},{v:target,duration:1.8,ease:'power2.out',onUpdate:function(){
+      el.textContent='~'+Math.round(this.targets()[0].v).toLocaleString();}});
+  }});
+});
+
+/* ---------- pill cloud pop-in ---------- */
+gsap.from('#pill-cloud .skill-pill',{scale:0,opacity:0,duration:.8,stagger:{each:.05,from:'random'},ease:'back.out(2)',
+  scrollTrigger:{trigger:'#pill-cloud',start:'top 82%'}});
+
+/* ---------- chat sequence ---------- */
+ScrollTrigger.create({trigger:'#chat-window',start:'top 70%',once:true,onEnter:()=>{
+  gsap.to('#chat-body .msg',{opacity:1,y:0,duration:.7,stagger:.75,ease:'power3.out'});
+}});
+
+/* ---------- dashboard ---------- */
+ScrollTrigger.create({trigger:'.dash-card',start:'top 72%',once:true,onEnter:()=>{
+  const q='Who needs a re-teach on main idea this week?';
+  const qt=document.getElementById('query-text');let i=0;
+  const type=()=>{if(i<=q.length){qt.textContent=q.slice(0,i);i++;setTimeout(type,34)}};
+  setTimeout(type,300);
+  gsap.from('.dash-bar',{scaleY:0,duration:1.1,stagger:.1,ease:'power3.out',delay:1.4});
+  gsap.from('.dash-bar span',{opacity:0,duration:.5,stagger:.1,delay:2});
+}});
+
+/* ---------- pollen particles ---------- */
+function pollen(id,colors,count){
+  const cv=document.getElementById(id);if(!cv)return;
+  const ctx=cv.getContext('2d');let W,H,parts=[];
+  const resize=()=>{W=cv.width=cv.offsetWidth*devicePixelRatio;H=cv.height=cv.offsetHeight*devicePixelRatio;};
+  resize();addEventListener('resize',resize);
+  for(let i=0;i<count;i++)parts.push({
+    x:Math.random(),y:Math.random(),r:(Math.random()*2.2+1)*devicePixelRatio,
+    vx:(Math.random()-.5)*.0003,vy:-(Math.random()*.0004+.0001),
+    c:colors[i%colors.length],ph:Math.random()*6.28,o:Math.random()*.5+.25});
+  (function draw(t){
+    ctx.clearRect(0,0,W,H);
+    parts.forEach(p=>{
+      p.x+=p.vx+Math.sin(t*.0004+p.ph)*.0002;p.y+=p.vy;
+      if(p.y<-.02)p.y=1.02;if(p.x<-.02)p.x=1.02;if(p.x>1.02)p.x=-.02;
+      ctx.globalAlpha=p.o;ctx.fillStyle=p.c;
+      ctx.beginPath();ctx.arc(p.x*W,p.y*H,p.r,0,6.28);ctx.fill();});
+    ctx.globalAlpha=1;requestAnimationFrame(draw);
+  })(0);
+}
+pollen('pollen',['#EE5B2E','#F5C33B','#9DBE8D','#F5AFCE'],26);
+pollen('pollen2',['#CDF463','#F5C33B','#F5AFCE'],34);
+
+/* ---------- magnetic buttons ---------- */
+document.querySelectorAll('.btn').forEach(b=>{
+  b.addEventListener('mousemove',e=>{
+    const r=b.getBoundingClientRect();
+    gsap.to(b,{x:(e.clientX-r.left-r.width/2)*.25,y:(e.clientY-r.top-r.height/2)*.35,duration:.4});
+  });
+  b.addEventListener('mouseleave',()=>gsap.to(b,{x:0,y:0,duration:.6,ease:'elastic.out(1,.4)'}));
+});
+
+/* smooth anchor scroll */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const id=a.getAttribute('href');if(id.length<2)return;
+    const t=document.querySelector(id);if(!t)return;
+    e.preventDefault();t.scrollIntoView({behavior:'smooth'});
+  });
+});
+</script>
+</body>
+</html>

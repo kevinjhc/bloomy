@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloomy: Learning that finally clicks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#22374A;
+  --ink-soft:#5A6B7A;
+  --line:#DCE2E6;
+  --cream:#FBF5EA;
+  --white:#FFFDF7;
+  --gray:#F1ECDD;
+  --gray-deep:#E7DFC9;
+  --sky:#BCE0EE;
+  --sky-deep:#8EC5DC;
+  --butter:#FFD98E;
+  --butter-deep:#F2B84B;
+  --lav:#CDC2F0;
+  --lav-deep:#A895DD;
+  --mint:#C4E5CB;
+  --mint-deep:#8FCBA0;
+  --coral:#F4845F;
+  --teal:#1E6A7A;
+  --dark:#17202B;
+  --pt-teal-bg:#EAF4F8; --pt-teal-bd:#8EC5DC; --pt-teal-tx:#1E6A7A;
+  --pt-butter-bg:#FFF4DC; --pt-butter-bd:#F2B84B; --pt-butter-tx:#8A6210;
+  --pt-lav-bg:#F1EDFC; --pt-lav-bd:#A895DD; --pt-lav-tx:#6A50B0;
+  --pt-mint-bg:#EAF6ED; --pt-mint-bd:#8FCBA0; --pt-mint-tx:#2E7D4F;
+  --pt-coral-bg:#FDEEE8; --pt-coral-bd:#F4845F; --pt-coral-tx:#C75A34;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--cream);color:var(--ink);
+  overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--butter-deep);color:var(--ink)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+img{max-width:100%}
+
+/* nav — edge to edge */
+nav{
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  padding:22px 40px;width:100%;
+}
+.nav-right{justify-self:end}
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:19px;letter-spacing:-.01em}
+.nav-links{display:flex;gap:30px;align-items:center;font-size:15px;font-weight:600;color:var(--ink)}
+.nav-links a.nl{opacity:.75;transition:opacity .25s}
+.nav-links a.nl:hover{opacity:1}
+.nav-right{display:flex;align-items:center;gap:10px}
+.pill{
+  display:inline-flex;align-items:center;gap:8px;border-radius:100px;padding:11px 20px;
+  font-size:14.5px;font-weight:700;transition:transform .25s cubic-bezier(.34,1.56,.64,1),background .25s;
+}
+.pill:hover{transform:translateY(-2px)}
+.pill.ghost{background:var(--gray);color:var(--ink)}
+.pill.ghost:hover{background:var(--gray-deep)}
+.pill.solid{background:var(--ink);color:var(--cream)}
+.pill.solid:hover{background:#152738}
+.pill.big{padding:16px 28px;font-size:16px}
+@media(max-width:900px){.nav-links{display:none}}
+
+/* hero — 70vh */
+.hero{position:relative;min-height:calc(100vh - 84px);display:flex;flex-direction:column;align-items:center;padding:0 0 40px;max-width:1200px;margin:0 auto;overflow:visible}
+.hero-grid{flex:1;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;align-content:center;gap:20px;width:100%;padding:110px 24px 0}
+@media(max-width:980px){.hero-grid{grid-template-columns:1fr}}
+.hero-cluster{position:relative;height:420px}
+@media(max-width:980px){.hero-cluster{display:none}}
+.hero-cluster svg{position:absolute;overflow:visible;will-change:transform}
+.hero-mid{text-align:center;max-width:640px;margin:0 auto;padding:0 10px}
+.hero-mid h1{font-size:clamp(52px,7.4vw,92px);font-weight:800;letter-spacing:-.03em;line-height:1.02}
+.hero-mid h1 .click{color:var(--teal);position:relative;display:inline-block}
+.hero-mid h1 .click svg{position:absolute;left:-3%;bottom:-.22em;width:106%;height:.34em;overflow:visible}
+.hero-mid h1 .click svg path{fill:none;stroke:var(--coral);stroke-width:6;stroke-linecap:round}
+.hero-mid p{margin-top:36px;font-size:20px;line-height:1.55;color:var(--ink-soft);font-weight:500;max-width:46ch;margin-left:auto;margin-right:auto}
+.hero-mid p b{color:var(--ink);font-weight:700}
+.hero-ctas{margin-top:32px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.hero-note{margin-top:18px;font-size:14px;color:var(--ink-soft);font-weight:600}
+.hero-chip{display:inline-flex;align-items:center;gap:8px;background:var(--pt-teal-bg);border:1.5px solid var(--pt-teal-bd);color:var(--pt-teal-tx);border-radius:100px;padding:9px 18px;font-size:13.5px;font-weight:700;margin-bottom:24px}
+
+/* section heading (centered, family.co style) */
+.sec-heading{text-align:center;padding:100px 24px 56px;max-width:900px;margin:0 auto}
+.sec-heading h2{font-size:clamp(28px,3.6vw,44px);font-weight:800;letter-spacing:-.025em;line-height:1.12}
+.sec-heading p{margin-top:16px;font-size:16.5px;color:var(--ink-soft);font-weight:500;line-height:1.6}
+.sec-tag{display:inline-block;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--teal);margin-bottom:14px}
+.pill-tag{
+  display:inline-flex;align-items:center;gap:8px;border-radius:100px;padding:8px 16px;
+  font-size:13px;font-weight:700;margin-bottom:16px;border:1.5px solid;
+}
+.pt-teal{background:var(--pt-teal-bg);border-color:var(--pt-teal-bd);color:var(--pt-teal-tx)}
+.pt-butter{background:var(--pt-butter-bg);border-color:var(--pt-butter-bd);color:var(--pt-butter-tx)}
+.pt-lav{background:var(--pt-lav-bg);border-color:var(--pt-lav-bd);color:var(--pt-lav-tx)}
+.pt-mint{background:var(--pt-mint-bg);border-color:var(--pt-mint-bd);color:var(--pt-mint-tx)}
+.pt-coral{background:var(--pt-coral-bg);border-color:var(--pt-coral-bd);color:var(--pt-coral-tx)}
+
+/* main thesis statement */
+.statement{padding:60px 24px;max-width:1200px;margin:0 auto}
+.statement-card{background:var(--white);border-radius:48px;padding:120px 60px;text-align:center}
+@media(max-width:640px){.statement-card{padding:70px 28px;border-radius:32px}}
+
+/* research + stats */
+.research{max-width:1200px;margin:0 auto;padding:100px 24px 130px;text-align:center}
+.research-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:56px}
+@media(max-width:960px){.research-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.research-row{grid-template-columns:1fr}}
+.research-chip{border:1.5px solid var(--line);background:var(--white);border-radius:16px;padding:16px 18px;font-weight:800;font-size:14px;color:var(--ink);text-align:left;display:flex;flex-direction:column;gap:4px}
+.research-chip i{font-style:normal;font-weight:500;color:var(--ink-soft);font-size:13px;line-height:1.4}
+.stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+@media(max-width:900px){.stat-cards{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.stat-cards{grid-template-columns:1fr}}
+.stat-card{background:var(--white);border:1.5px solid var(--line);border-radius:24px;padding:32px 26px;text-align:left}
+.stat-num{font-weight:800;font-size:44px;letter-spacing:-.03em;line-height:1}
+.stat-num small{font-size:.4em;font-weight:700;margin-left:2px}
+.stat-lbl{margin-top:10px;font-weight:800;font-size:15px;color:var(--ink)}
+.stat-card p{margin-top:6px;font-size:14px;color:var(--ink-soft);font-weight:500;line-height:1.5}
+.statement h2{font-size:clamp(36px,5.2vw,70px);line-height:1.16;letter-spacing:-.02em;color:var(--ink);font-weight:800}
+.statement h2 .hl{position:relative;display:inline-block;color:var(--coral)}
+.statement h2 .hl svg{position:absolute;left:-2%;bottom:-.18em;width:104%;height:.35em;overflow:visible}
+.statement h2 .hl svg path{fill:none;stroke:var(--coral);stroke-width:6;stroke-linecap:round}
+.statement .word{display:inline-block}
+.stat-caption{margin-top:30px;font-size:16.5px;color:var(--ink-soft);max-width:560px;margin-left:auto;margin-right:auto;line-height:1.6;font-weight:500}
+
+/* mastery bar (dark card) */
+.mastery{
+  background:var(--ink);color:var(--cream);
+  border-radius:36px;max-width:1200px;margin:0 auto 120px;
+  padding:90px 60px;position:relative;overflow:hidden;
+}
+@media(max-width:768px){.mastery{padding:60px 28px;border-radius:26px}}
+.mastery-inner{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center;position:relative;z-index:2}
+@media(max-width:960px){.mastery-inner{grid-template-columns:1fr}}
+.mastery h2{font-size:clamp(32px,4.2vw,52px);line-height:1.08;letter-spacing:-.02em;font-weight:800}
+.mastery h2 em{color:var(--coral);font-style:normal}
+.mastery p{margin-top:20px;font-size:16.5px;line-height:1.65;opacity:.85;max-width:46ch;font-weight:500}
+.mastery-dial{display:flex;flex-direction:column;align-items:center;gap:18px}
+.dial-wrap{position:relative;width:min(300px,78vw);aspect-ratio:1}
+.dial-wrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.dial-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dial-val .num{font-size:68px;font-weight:800;line-height:1;color:var(--butter-deep)}
+.dial-val .lbl{font-size:14px;opacity:.75;margin-top:8px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+.mastery-deco{position:absolute;font-size:180px;font-weight:800;opacity:.05;pointer-events:none;user-select:none}
+
+/* curriculum panels */
+.curr-wrap{max-width:1200px;margin:0 auto;padding:0 24px 130px}
+.curr-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:860px){.curr-grid{grid-template-columns:1fr}}
+.curr-panel{
+  border:1.5px solid var(--line);border-radius:24px;padding:38px 36px;position:relative;overflow:hidden;
+  transition:border-color .4s,transform .4s cubic-bezier(.34,1.4,.64,1);background:var(--white);
+}
+.curr-panel:hover{transform:translateY(-6px)}
+.curr-panel.ela{background:var(--pt-lav-bg)}
+.curr-panel.ela:hover{border-color:var(--lav-deep)}
+.curr-panel.math{background:var(--pt-teal-bg)}
+.curr-panel.math:hover{border-color:var(--sky-deep)}
+.curr-panel h3{font-size:26px;font-weight:800;letter-spacing:-.01em}
+.curr-panel .count{font-weight:800;font-size:clamp(38px,4.4vw,54px);letter-spacing:-.02em;margin-top:4px}
+.curr-panel.ela .count{color:var(--pt-lav-tx)}
+.curr-panel.math .count{color:var(--teal)}
+.curr-panel .doms{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px}
+.dom-chip{background:rgba(255,255,255,.75);border:1.5px solid var(--line);border-radius:100px;padding:7px 14px;font-size:13px;font-weight:700;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.dom-chip:hover{transform:scale(1.07) rotate(-1.5deg)}
+.curr-panel .corner-art{position:absolute;right:18px;top:22px;width:64px;height:64px;opacity:.9}
+.curr-foot{margin-top:34px;display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;font-size:14.5px;font-weight:600;color:var(--ink-soft)}
+.curr-foot .dotsep{width:5px;height:5px;border-radius:50%;background:var(--line)}
+
+/* 4-card grid (dark mockup cards) */
+.card-grid{max-width:1200px;margin:0 auto;padding:0 24px 40px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+@media(max-width:1080px){.card-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.card-grid{grid-template-columns:1fr}}
+.mock-card{background:var(--gray);border-radius:22px;padding:20px;transition:transform .4s cubic-bezier(.34,1.4,.64,1)}
+.mock-card:hover{transform:translateY(-6px)}
+.mock-shot{
+  background:var(--dark);border-radius:16px;padding:22px 18px;min-height:190px;
+  display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;
+}
+.mock-row{display:flex;align-items:center;gap:12px;background:#1F2B3A;border-radius:12px;padding:12px 14px}
+.mock-row .ico{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none}
+.mock-row .tx{color:var(--cream)}
+.mock-row .tx .t{font-size:13.5px;font-weight:700}
+.mock-row .tx .d{font-size:11.5px;color:#94A7B8;margin-top:2px;line-height:1.4}
+.mock-card h3{margin-top:18px;font-size:17px;font-weight:800;letter-spacing:-.01em}
+.mock-card p{margin-top:6px;font-size:13.5px;color:var(--ink-soft);font-weight:500;line-height:1.5}
+.mock-tag{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:11.5px;font-weight:800;color:var(--ink-soft);letter-spacing:.04em}
+
+/* tabbed phone showcase */
+.showcase{max-width:1200px;margin:0 auto;padding:20px 24px 120px;text-align:center}
+.showcase h2{font-size:clamp(28px,3.8vw,46px);font-weight:800;letter-spacing:-.025em;line-height:1.1;margin-bottom:56px}
+.phones-row{display:flex;gap:26px;justify-content:center;align-items:flex-end;flex-wrap:wrap}
+.phone{
+  width:220px;background:var(--dark);border-radius:34px;padding:10px;box-shadow:0 40px 80px -30px rgba(23,32,43,.5);
+  transition:transform .45s cubic-bezier(.34,1.2,.64,1),opacity .45s;
+}
+.phone.dim{opacity:.5;transform:scale(.94)}
+.phone-screen{background:var(--white);border-radius:24px;overflow:hidden;aspect-ratio:9/18.5;position:relative}
+.phone-screen .bar{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:70px;height:6px;background:var(--dark);border-radius:4px;z-index:3}
+.phone-tab{margin-top:18px;display:inline-flex;align-items:center;gap:8px;background:var(--gray);border-radius:100px;padding:9px 18px;font-size:13.5px;font-weight:700;cursor:pointer;transition:background .25s,color .25s}
+.phone-tab.active{background:var(--ink);color:var(--cream)}
+.phone-tab .dot{width:7px;height:7px;border-radius:50%}
+
+/* dense feature grid (gray section) */
+.dense-sec{background:var(--gray);padding:110px 24px}
+.dense-inner{max-width:1200px;margin:0 auto}
+.dense-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+@media(max-width:860px){.dense-grid{grid-template-columns:1fr}}
+.dense-item{padding:42px 40px;border-top:1px solid var(--line)}
+.dense-grid .dense-item:nth-child(1),.dense-grid .dense-item:nth-child(2){border-top:none}
+.dense-item .tag{font-size:12.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px;display:inline-block}
+.dense-item h3{font-size:22px;font-weight:800;letter-spacing:-.015em;line-height:1.2;max-width:24ch}
+.dense-item p{margin-top:10px;font-size:15px;color:var(--ink-soft);font-weight:500;line-height:1.55;max-width:38ch}
+.dense-visual{margin-top:20px;display:flex;align-items:center;gap:10px}
+.dense-stat{font-size:30px;font-weight:800;letter-spacing:-.02em}
+.dense-stat small{font-size:14px;font-weight:700;color:var(--ink-soft);margin-left:6px}
+.mini-track{margin-top:18px;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700}
+.mini-track .mt-dot{width:8px;height:8px;border-radius:50%}
+
+/* alternating spotlight rows */
+.spot{max-width:1200px;margin:0 auto;padding:130px 24px}
+.spot-row{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center}
+@media(max-width:900px){.spot-row{grid-template-columns:1fr;gap:40px}}
+.spot-row.rev .spot-media{order:2}
+.spot-row.rev .spot-text{order:1}
+@media(max-width:900px){.spot-row.rev .spot-media,.spot-row.rev .spot-text{order:initial}}
+.spot-media{display:flex;justify-content:center}
+.spot-shot{
+  width:100%;max-width:400px;background:var(--dark);border-radius:26px;padding:16px;
+  box-shadow:0 50px 90px -30px rgba(23,32,43,.45);
+}
+.spot-shot .inner{background:var(--white);border-radius:18px;padding:20px;min-height:340px}
+.spot-tag{font-size:12.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px;display:inline-block}
+.spot-text h3{font-size:clamp(26px,3vw,36px);font-weight:800;letter-spacing:-.02em;line-height:1.12;max-width:14ch}
+.spot-text p{margin-top:16px;font-size:16px;line-height:1.6;color:var(--ink-soft);font-weight:500;max-width:42ch}
+.spot-bullets{margin-top:22px;display:flex;flex-direction:column;gap:12px}
+.spot-bullets .b{display:flex;gap:10px;align-items:center;font-size:14.5px;font-weight:700}
+.spot-demo{margin-top:26px;display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:14.5px;position:relative}
+.spot-demo::after{content:'';position:absolute;left:0;bottom:-3px;width:100%;height:2px;background:var(--ink);transform:scaleX(.4);transform-origin:left;transition:transform .3s}
+.spot-demo:hover::after{transform:scaleX(1)}
+
+/* illustration + checklist row */
+.illorow{max-width:1200px;margin:0 auto;padding:60px 24px 130px;display:grid;grid-template-columns:.85fr 1.15fr;gap:70px;align-items:center}
+@media(max-width:900px){.illorow{grid-template-columns:1fr}}
+.illo-stage{background:var(--gray);border-radius:30px;padding:50px;display:flex;justify-content:center}
+.illo-stage svg{width:220px;height:auto;overflow:visible}
+.illo-text h2{font-size:clamp(28px,3.6vw,42px);font-weight:800;letter-spacing:-.025em;line-height:1.14}
+.illo-text p{margin-top:18px;font-size:16.5px;color:var(--ink-soft);font-weight:500;line-height:1.6;max-width:44ch}
+.check-grid{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:520px){.check-grid{grid-template-columns:1fr}}
+.check-item{display:flex;gap:10px;align-items:center;font-weight:700;font-size:14.5px}
+.check-item svg{flex:none}
+
+/* Meet BloomyBot section */
+.bot-sec{max-width:1200px;margin:0 auto;padding:20px 24px 130px}
+.bot-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:60px;align-items:center}
+@media(max-width:900px){.bot-grid{grid-template-columns:1fr}}
+.bot-stage{
+  background:var(--pt-teal-bg);border:1.5px dashed var(--sky-deep);border-radius:24px;padding:40px 30px;
+  display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;
+}
+.bot-stage svg.botchar{width:180px;height:auto;overflow:visible}
+.bubbles{display:flex;flex-direction:column;gap:12px;width:100%;margin-top:18px}
+.bub{
+  background:var(--white);border:1.5px solid var(--line);border-radius:16px;padding:13px 17px;font-size:14.5px;line-height:1.5;
+  font-weight:500;max-width:88%;opacity:0;transform:translateY(12px);
+}
+.bub.q{align-self:flex-end;background:var(--ink);color:var(--cream);border-color:var(--ink);border-bottom-right-radius:5px}
+.bub.a{align-self:flex-start;border-bottom-left-radius:5px}
+.bub.a .lvl{display:block;font-size:11.5px;font-weight:800;letter-spacing:.06em;color:var(--coral);margin-top:6px;text-transform:uppercase}
+.bot-copy .feat-list{margin-top:28px;display:flex;flex-direction:column;gap:0}
+.feat{display:flex;gap:16px;align-items:center;padding:16px 0;border-bottom:1.5px dashed var(--line);font-weight:600;font-size:15.5px}
+.feat:last-child{border-bottom:none}
+.feat .fico{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;flex:none}
+.feat span small{display:block;font-weight:500;font-size:13.5px;color:var(--ink-soft);margin-top:2px}
+
+/* combined for-teachers section */
+.teach-sec{max-width:1200px;margin:0 auto;padding:20px 24px 130px}
+.teach-combo-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+@media(max-width:900px){.teach-combo-grid{grid-template-columns:1fr}}
+.teach-visuals{display:flex;flex-direction:column;gap:22px}
+.dash-card{
+  background:var(--white);border:1.5px solid var(--line);border-radius:24px;padding:26px;
+  box-shadow:0 30px 60px -30px rgba(23,32,43,.25);
+}
+.dash-query{
+  display:flex;align-items:center;gap:12px;background:var(--cream);border:1.5px solid var(--line);
+  border-radius:14px;padding:14px 18px;font-size:14.5px;color:var(--ink);font-weight:600;
+}
+.dash-query .caret{width:2px;height:16px;background:var(--coral);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.dash-bars{display:flex;align-items:flex-end;gap:12px;height:150px;margin-top:26px;padding:0 6px}
+.dash-bar{flex:1;border-radius:8px 8px 4px 4px;position:relative;transform-origin:bottom}
+.dash-bar span{position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-size:11.5px;font-weight:700;color:var(--ink)}
+.dash-bar i{position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);font-size:10.5px;font-style:normal;color:var(--ink-soft);white-space:nowrap}
+.dash-foot{margin-top:38px;display:flex;gap:8px;flex-wrap:wrap}
+.dash-chip{font-size:12px;font-weight:600;padding:6px 12px;border-radius:100px;background:var(--gray);color:var(--ink)}
+.desk-panel{
+  background:var(--pt-butter-bg);border:1.5px dashed var(--butter-deep);border-radius:24px;padding:26px;position:relative;
+}
+.ask-bar{
+  background:var(--white);border:1.5px solid var(--line);border-radius:14px;padding:14px 18px;font-size:14.5px;font-weight:600;
+  display:flex;align-items:center;gap:10px;
+}
+.ask-bar .caret{width:2px;height:16px;background:var(--coral);animation:blink 1s steps(1) infinite}
+.answer-card{margin-top:16px;background:var(--white);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px}
+.answer-card .ac-title{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:12px}
+.group-row{display:flex;align-items:center;gap:12px;padding:8px 0;font-weight:600;font-size:14px}
+.group-row .av{width:30px;height:30px;border-radius:50%;flex:none;border:1.5px solid var(--line);overflow:hidden}
+.group-row .av svg{width:100%;height:100%}
+.group-row .why{margin-left:auto;font-size:12px;font-weight:700;color:var(--pt-coral-tx);background:var(--pt-coral-bg);border-radius:100px;padding:4px 10px;white-space:nowrap}
+.teach-checks{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.teach-checks{grid-template-columns:1fr}}
+.tcheck{display:flex;gap:10px;align-items:center;font-weight:600;font-size:14.5px;background:var(--gray);border-radius:12px;padding:12px 15px}
+.tcheck svg{flex:none}
+
+/* details that matter — stacked */
+.details{max-width:1000px;margin:0 auto;padding:130px 24px}
+.details h2{text-align:center;font-size:clamp(28px,3.8vw,44px);font-weight:800;letter-spacing:-.025em;margin-bottom:80px}
+.d-row{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;padding:64px 0;border-top:1px solid var(--line)}
+.details .d-row:first-of-type{border-top:none}
+@media(max-width:860px){.d-row{grid-template-columns:1fr;gap:30px}}
+.d-row.rev .d-media{order:2}
+.d-row.rev .d-text{order:1}
+@media(max-width:860px){.d-row.rev .d-media,.d-row.rev .d-text{order:initial}}
+.d-text h3{font-size:22px;font-weight:800;letter-spacing:-.015em;line-height:1.25;max-width:22ch}
+.d-text p{margin-top:12px;font-size:15px;color:var(--ink-soft);font-weight:500;line-height:1.6;max-width:40ch}
+.d-media{background:var(--gray);border-radius:20px;padding:28px;min-height:180px;display:flex;align-items:center;justify-content:center}
+
+/* testimonial wall */
+.friends{padding:120px 24px;max-width:1200px;margin:0 auto}
+.friends-head{text-align:center;margin-bottom:50px}
+.friends-head h2{font-size:clamp(26px,3.2vw,38px);font-weight:800;letter-spacing:-.02em}
+.friends-head p{color:var(--ink-soft);font-weight:600;font-size:15px;margin-top:8px}
+.tweet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:960px){.tweet-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.tweet-grid{grid-template-columns:1fr}}
+.tweet{background:var(--gray);border-radius:18px;padding:22px 22px 20px;font-size:14.5px;line-height:1.55;font-weight:500;transition:transform .3s cubic-bezier(.34,1.4,.64,1)}
+.tweet:hover{transform:translateY(-4px)}
+.tweet .who{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.tweet .who .av{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;color:var(--cream);font-weight:800;font-size:13px}
+.tweet .who .nm{font-weight:800;font-size:13.5px}
+.tweet .who .hd{font-size:12.5px;color:var(--ink-soft);font-weight:600}
+
+/* old-way-vs-bloomy-way report cards */
+.compare{max-width:1200px;margin:0 auto;padding:20px 24px 130px}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:stretch}
+@media(max-width:900px){.compare-grid{grid-template-columns:1fr;max-width:520px;margin:0 auto}}
+.report{border:1.5px solid var(--line);border-radius:22px;padding:36px 32px;position:relative;background:var(--white)}
+.report.old{background:var(--gray)}
+.report.new{background:var(--pt-mint-bg);border-color:var(--mint-deep)}
+.report .rpt-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px dashed var(--line);padding-bottom:16px;margin-bottom:20px}
+.report .rpt-head h3{font-size:21px;font-weight:800}
+.report .rpt-head .grade{font-weight:800;font-size:32px;width:54px;height:54px;border:1.5px solid var(--line);border-radius:50%;display:grid;place-items:center;background:var(--white)}
+.report.old .grade{color:var(--ink)}
+.report.new .grade{background:var(--mint-deep);color:var(--ink)}
+.rpt-row{display:flex;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--line);font-weight:600;font-size:15px;align-items:center}
+.rpt-row:last-of-type{border:none}
+.rpt-row .no{color:#C0503A;font-weight:800;white-space:nowrap}
+.rpt-row .yes{color:#2E7D4F;font-weight:800;white-space:nowrap}
+.report .stamp-note{position:absolute;bottom:-14px;right:20px;font-size:14px;font-weight:700}
+.report.old .stamp-note{color:#C0503A}
+.report.new .stamp-note{color:#2E7D4F}
+
+/* 90% or it doesn't count — stamp section */
+.stamp-sec{background:var(--ink);border-radius:36px;max-width:1200px;margin:0 auto 130px;padding:110px 24px;text-align:center;color:var(--cream);overflow:hidden;position:relative}
+.stamp-sec h2{font-size:clamp(32px,5vw,60px);font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.stamp-sec .sub{margin-top:18px;font-size:16.5px;font-weight:500;color:var(--sky);max-width:560px;margin-left:auto;margin-right:auto;line-height:1.6;opacity:.9}
+.stamp-wrap{position:relative;display:inline-block;margin-top:50px}
+.paper-sheet{
+  background:var(--white);color:var(--ink);border-radius:18px;
+  padding:36px 46px;display:inline-block;box-shadow:0 30px 60px -20px rgba(0,0,0,.35);text-align:left;
+}
+.paper-sheet .q{font-weight:700;font-size:16px}
+.paper-sheet .ans{font-size:15px;color:var(--teal);margin-top:10px;font-weight:600}
+.paper-sheet .score{margin-top:16px;font-weight:800;font-size:14px;color:#2E7D4F}
+.stamp{position:absolute;top:-28px;right:-40px;width:150px;height:150px;transform:rotate(12deg);opacity:0;pointer-events:none}
+@media(max-width:640px){.stamp{width:110px;height:110px;right:-14px}}
+
+/* sticker sheet skills */
+.stickersheet{max-width:1200px;margin:0 auto;padding:20px 24px 130px}
+.skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:860px){.skills-grid{grid-template-columns:1fr}}
+.skills-card{border:1.5px solid var(--line);border-radius:28px;padding:36px 34px;background:var(--white)}
+.skills-card.ela{background:var(--pt-lav-bg);border-color:var(--pt-lav-bd)}
+.skills-card.math{background:var(--pt-teal-bg);border-color:var(--pt-teal-bd)}
+.skills-card-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:28px;padding-bottom:22px;border-bottom:1.5px solid rgba(34,55,74,.14)}
+.skills-card-head h3{font-size:20px;font-weight:800;letter-spacing:-.01em}
+.skills-total{text-align:right}
+.skills-total span{font-weight:800;font-size:30px;letter-spacing:-.02em}
+.skills-card.ela .skills-total span{color:var(--pt-lav-tx)}
+.skills-card.math .skills-total span{color:var(--teal)}
+.skills-total small{display:block;font-weight:600;font-size:12px;color:var(--ink-soft);margin-top:2px}
+.skills-rows{display:flex;flex-direction:column;gap:16px}
+.skills-row{display:grid;grid-template-columns:1fr 2fr auto;gap:14px;align-items:center;font-size:14px;font-weight:700}
+.skills-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.skills-bar-track{height:8px;border-radius:100px;background:rgba(34,55,74,.1)}
+.skills-bar{display:block;height:100%;border-radius:100px;width:0;transition:width 1.2s cubic-bezier(.34,1,.4,1)}
+.skills-card.ela .skills-bar{background:var(--lav-deep)}
+.skills-card.math .skills-bar{background:var(--sky-deep)}
+.skills-num{font-weight:800;font-size:13px;color:var(--ink-soft);text-align:right;white-space:nowrap}
+
+/* FAQ */
+.faq{max-width:800px;margin:0 auto;padding:120px 24px}
+.faq-grid{display:flex;flex-direction:column;gap:40px}
+.faq-head{text-align:center}
+.faq-head h2{font-size:clamp(26px,3.4vw,38px);font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.faq-head p{margin-top:14px;color:var(--ink-soft);font-weight:500;font-size:15px;line-height:1.6}
+.faq-list{display:flex;flex-direction:column}
+.faq-item{border-top:1px solid var(--line);padding:22px 0}
+.faq-list .faq-item:last-child{border-bottom:1px solid var(--line)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;gap:16px;cursor:pointer;font-weight:700;font-size:16px}
+.faq-q .plus{width:22px;height:22px;flex:none;position:relative}
+.faq-q .plus::before,.faq-q .plus::after{content:'';position:absolute;background:var(--ink);border-radius:2px;transition:transform .3s}
+.faq-q .plus::before{top:50%;left:0;width:100%;height:2px;transform:translateY(-50%)}
+.faq-q .plus::after{left:50%;top:0;width:2px;height:100%;transform:translateX(-50%)}
+.faq-item.open .plus::after{transform:translateX(-50%) rotate(90deg);opacity:0}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.faq-a p{padding-top:14px;font-size:15px;color:var(--ink-soft);font-weight:500;line-height:1.6;max-width:56ch}
+
+/* footer cta */
+.footcta-sec{padding:20px 24px 40px;max-width:1200px;margin:0 auto}
+.footcta{background:var(--gray);border-radius:36px;padding:80px;position:relative;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+@media(max-width:900px){.footcta{grid-template-columns:1fr;padding:56px 28px;border-radius:26px}}
+.footcta-icons{display:flex;gap:16px;margin-bottom:26px}
+.footcta-icons svg{width:36px;height:36px}
+.footcta h2{font-size:clamp(30px,4vw,48px);font-weight:800;letter-spacing:-.025em;margin-top:14px}
+.footcta-copy p{margin-top:16px;color:var(--ink-soft);font-weight:500;font-size:16px;line-height:1.6;max-width:38ch}
+.demo-form{background:var(--white);border-radius:24px;padding:32px;display:flex;flex-direction:column;gap:16px;box-shadow:0 30px 60px -35px rgba(23,32,43,.3)}
+.form-field{display:flex;flex-direction:column;gap:6px}
+.form-field label{font-size:12.5px;font-weight:800;letter-spacing:.04em;color:var(--ink-soft)}
+.form-field input,.form-field select{
+  border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:15px;
+  color:var(--ink);background:var(--cream);
+}
+.form-field input:focus,.form-field select:focus{outline:none;border-color:var(--teal)}
+.form-submit{margin-top:6px;width:100%;justify-content:center}
+
+footer{padding:60px 40px 36px}
+.foot-grid{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap}
+.foot-brand p{margin-top:12px;font-size:14px;color:var(--ink-soft);max-width:26ch;line-height:1.55;font-weight:500}
+.foot-cols{display:flex;gap:70px;flex-wrap:wrap}
+.foot-col h5{font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:16px}
+.foot-col a{display:block;font-size:14.5px;font-weight:600;margin-bottom:11px}
+.foot-col a:hover{color:var(--coral)}
+.foot-bottom{max-width:1200px;margin:40px auto 0;border-top:1px solid var(--line);padding-top:22px;
+  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-soft);font-weight:600}
+
+.rv{opacity:0;transform:translateY(34px)}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a class="logo" href="#">Bloomy</a>
+  <div class="nav-links">
+    <a class="nl" href="#">For Schools</a>
+    <a class="nl" href="#">For Families</a>
+  </div>
+  <div class="nav-right">
+    <a href="#" class="pill ghost">Sign in</a>
+    <a href="#" class="pill solid">Request a demo →</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-grid">
+    <div class="hero-cluster" id="cluster-left">
+      <!-- arch gate + steps (direction 2 world illustration) -->
+      <svg data-x="26" data-y="16" style="left:8%;top:10%;width:180px;height:auto" viewBox="40 250 380 280">
+        <g stroke="#22374A" stroke-width="2.5" stroke-linejoin="round">
+          <path d="M60 508 L60 478 L100 478 L100 448 L140 448 L140 418 L180 418 L180 508 Z" fill="#8EC5DC"/>
+          <rect x="180" y="330" width="150" height="178" fill="#8EC5DC"/>
+          <path d="M205 508 L205 420 C205 380 305 380 305 420 L305 508 Z" fill="#FBF5EA"/>
+          <rect x="168" y="312" width="174" height="20" rx="9" fill="#8EC5DC"/>
+          <line x1="255" y1="312" x2="255" y2="270" stroke-linecap="round"/>
+          <path d="M255 272 L292 280 L255 292 Z" fill="#F4845F"/>
+        </g>
+        <g stroke="#22374A" stroke-width="2.2" stroke-linecap="round">
+          <path d="M368 508 L368 484 M368 492 C 356 488 352 476 354 468 M368 492 C 380 488 384 476 382 468" fill="none"/>
+          <path d="M354 468 C 362 470 367 478 368 486 Z M382 468 C 374 470 369 478 368 486 Z" fill="#8FCBA0"/>
+          <path d="M352 508 L384 508"/>
+        </g>
+      </svg>
+      <!-- book stack + apple -->
+      <svg data-x="-20" data-y="26" style="left:50%;top:42%;width:130px;height:auto" viewBox="410 220 260 300">
+        <g stroke="#22374A" stroke-width="2.5" stroke-linejoin="round">
+          <rect x="430" y="440" width="220" height="70" rx="10" fill="#FFD98E"/>
+          <rect x="452" y="470" width="176" height="10" rx="5" fill="#F2B84B" stroke="none"/>
+          <rect x="462" y="398" width="156" height="42" rx="8" fill="#CDC2F0"/>
+          <rect x="474" y="358" width="132" height="40" rx="8" fill="#8EC5DC"/>
+          <rect x="486" y="320" width="108" height="38" rx="8" fill="#C4E5CB"/>
+          <line x1="600" y1="408" x2="600" y2="430"/>
+          <line x1="590" y1="368" x2="590" y2="388"/>
+          <line x1="578" y1="330" x2="578" y2="348"/>
+        </g>
+        <g stroke="#22374A" stroke-width="2.2">
+          <circle cx="540" cy="300" r="14" fill="#F4845F"/>
+          <path d="M540 286 C 539 280 542 276 546 274" fill="none" stroke-linecap="round"/>
+          <path d="M544 280 C 550 274 558 276 560 280 C 556 285 548 285 544 280 Z" fill="#8FCBA0"/>
+        </g>
+      </svg>
+      <!-- floating paper -->
+      <svg class="wfloat drift" data-x="18" data-y="-20" style="left:4%;top:58%;width:52px" viewBox="370 170 70 80">
+        <g stroke="#22374A" stroke-width="2" stroke-linejoin="round" transform="rotate(-8 400 200)">
+          <rect x="380" y="180" width="52" height="64" rx="6" fill="#FFFDF7"/>
+          <line x1="390" y1="196" x2="422" y2="196"/><line x1="390" y1="208" x2="422" y2="208"/><line x1="390" y1="220" x2="410" y2="220"/>
+        </g>
+      </svg>
+      <!-- star coin -->
+      <svg class="wfloat coin" data-x="-28" data-y="18" style="left:68%;top:6%;width:44px" viewBox="0 0 50 50">
+        <circle cx="25" cy="25" r="20" fill="#F2B84B" stroke="#22374A" stroke-width="2.2"/>
+        <path d="M25 15 L28 23 L37 23 L30 28.5 L32.5 37 L25 32 L17.5 37 L20 28.5 L13 23 L22 23 Z" fill="#FFF4DC" stroke="none"/>
+      </svg>
+      <svg class="wfloat" data-x="14" data-y="-16" style="left:30%;top:82%;width:26px" viewBox="0 0 24 24"><path class="spark" d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z" fill="#8EC5DC"/></svg>
+    </div>
+
+    <div class="hero-mid">
+      <div class="hero-chip rv">✦ AI-powered mastery learning for K–12</div>
+      <h1>Learning that<br>finally <span class="click">clicks.<svg viewBox="0 0 200 24" preserveAspectRatio="none"><path class="swoosh" d="M4 18 C 50 8, 120 20, 196 10"/></svg></span></h1>
+      <p class="rv">Bloomy uses AI to teach students exactly what they need to know, when they need to know it. Students build lasting skills across ELA, Math, and Writing through adaptive lessons, live AI tutoring, and mastery-based practice.</p>
+      <div class="hero-ctas rv">
+        <a href="#" class="pill solid big">✦ Request a Demo</a>
+        <a href="#explore" class="pill ghost big">See how it works</a>
+      </div>
+      <p class="hero-note rv">Grounded in learning science · loved by real classrooms</p>
+    </div>
+
+    <div class="hero-cluster" id="cluster-right">
+      <!-- pencil tower + orbit ring -->
+      <svg data-x="-24" data-y="18" style="right:14%;top:6%;width:150px;height:auto" viewBox="680 160 200 360">
+        <g stroke="#22374A" stroke-width="2.5" stroke-linejoin="round">
+          <rect x="700" y="420" width="170" height="90" rx="10" fill="#CDC2F0"/>
+          <rect x="718" y="456" width="134" height="10" rx="5" fill="#A895DD" stroke="none"/>
+          <rect x="762" y="230" width="46" height="160" fill="#FFD98E"/>
+          <path d="M762 230 L785 178 L808 230 Z" fill="#FBF5EA"/>
+          <path d="M776 199 L785 178 L794 199 Z" fill="#22374A"/>
+          <rect x="762" y="390" width="46" height="18" fill="#F4845F"/>
+          <line x1="777" y1="238" x2="777" y2="382"/>
+          <line x1="793" y1="238" x2="793" y2="382"/>
+        </g>
+        <g id="orbit">
+          <ellipse cx="785" cy="300" rx="88" ry="26" stroke="#8EC5DC" stroke-width="2.5" stroke-dasharray="6 8" fill="none"/>
+          <circle id="orbit-dot" cx="873" cy="300" r="9" fill="#F4845F" stroke="#22374A" stroke-width="2.2"/>
+        </g>
+      </svg>
+      <!-- staircase + star prize + abc blocks -->
+      <svg data-x="20" data-y="26" style="right:2%;top:44%;width:180px;height:auto" viewBox="930 300 320 220">
+        <g stroke="#22374A" stroke-width="2.5" stroke-linejoin="round">
+          <path d="M940 506 L940 464 L985 464 L985 422 L1030 422 L1030 380 L1075 380 L1075 506 Z" fill="#C4E5CB"/>
+          <path d="M1075 380 L1075 506 L1120 506 L1120 380 Z" fill="#8FCBA0"/>
+        </g>
+        <g id="star-prize" stroke="#22374A" stroke-width="2.2" stroke-linejoin="round">
+          <path d="M1097 316 L1104 336 L1125 336 L1108 349 L1114 369 L1097 357 L1080 369 L1086 349 L1069 336 L1090 336 Z" fill="#F2B84B"/>
+        </g>
+        <g stroke="#22374A" stroke-width="2.3" stroke-linejoin="round">
+          <rect x="1148" y="462" width="44" height="44" rx="7" fill="#8EC5DC"/>
+          <rect x="1196" y="462" width="44" height="44" rx="7" fill="#F4845F"/>
+          <rect x="1172" y="416" width="44" height="44" rx="7" fill="#FFD98E"/>
+          <text x="1170" y="492" font-family="Plus Jakarta Sans" font-size="24" font-weight="800" fill="#22374A" text-anchor="middle" stroke="none">A</text>
+          <text x="1218" y="492" font-family="Plus Jakarta Sans" font-size="24" font-weight="800" fill="#FFFDF7" text-anchor="middle" stroke="none">B</text>
+          <text x="1194" y="446" font-family="Plus Jakarta Sans" font-size="24" font-weight="800" fill="#22374A" text-anchor="middle" stroke="none">C</text>
+        </g>
+      </svg>
+      <!-- floating paper -->
+      <svg class="wfloat drift" data-x="-18" data-y="-22" style="right:4%;top:6%;width:48px" viewBox="948 130 70 80">
+        <g stroke="#22374A" stroke-width="2" stroke-linejoin="round" transform="rotate(10 980 170)">
+          <rect x="958" y="140" width="48" height="58" rx="6" fill="#FFFDF7"/>
+          <line x1="967" y1="155" x2="997" y2="155"/><line x1="967" y1="166" x2="997" y2="166"/><line x1="967" y1="177" x2="985" y2="177"/>
+        </g>
+      </svg>
+      <!-- star coin -->
+      <svg class="wfloat coin" data-x="26" data-y="16" style="right:66%;top:66%;width:38px" viewBox="0 0 50 50">
+        <circle cx="25" cy="25" r="18" fill="#F2B84B" stroke="#22374A" stroke-width="2.2"/>
+        <path d="M25 16 L27.9 22.8 L35.4 22.8 L29.3 27.4 L31.6 34.6 L25 30.2 L18.4 34.6 L20.7 27.4 L14.6 22.8 L22.1 22.8 Z" fill="#FFF4DC" stroke="none"/>
+      </svg>
+      <svg class="wfloat" data-x="-14" data-y="18" style="right:56%;top:16%;width:24px" viewBox="0 0 24 24"><path class="spark" d="M12 2 L14.2 9.8 L22 12 L14.2 14.2 L12 22 L9.8 14.2 L2 12 L9.8 9.8 Z" fill="#A895DD"/></svg>
+    </div>
+  </div>
+</header>
+
+<section class="statement">
+  <div class="statement-card">
+    <h2 id="statement-text">In most classrooms, the lesson moves on whether you're ready or not. Bloomy waits for <span class="hl">mastery,<svg viewBox="0 0 120 12" preserveAspectRatio="none"><path class="scribble" d="M3 8 C 30 3, 55 10, 80 5 S 112 7, 117 5"/></svg></span> then moves you forward.</h2>
+    <p class="stat-caption rv">Students advance only after proving they truly own a skill. No gaps swept under the rug. No one left guessing.</p>
+  </div>
+</section>
+
+<section class="research">
+  <div class="sec-heading" style="padding:0 0 40px">
+    <span class="pill-tag pt-teal rv">Research foundation</span>
+    <h2 class="rv">Designed by educators.<br>Backed by research.</h2>
+  </div>
+  <div class="research-row rv">
+    <span class="research-chip">Bloom <i>Master each skill before moving on</i></span>
+    <span class="research-chip">Vygotsky <i>Practice tuned to the right challenge level</i></span>
+    <span class="research-chip">Sweller <i>One new idea at a time, no overload</i></span>
+    <span class="research-chip">Roediger &amp; Karpicke <i>Practice that actually sticks</i></span>
+    <span class="research-chip">Ericsson <i>Focused, deliberate practice</i></span>
+  </div>
+  <div class="stat-cards">
+    <div class="stat-card rv">
+      <div class="stat-num" style="color:var(--coral)">90%</div>
+      <div class="stat-lbl">Mastery threshold</div>
+      <p>Proven proficiency before moving on.</p>
+    </div>
+    <div class="stat-card rv">
+      <div class="stat-num" style="color:var(--butter-deep)">~25<small>min</small></div>
+      <div class="stat-lbl">Per skill</div>
+      <p>A complete learning cycle in one sitting.</p>
+    </div>
+    <div class="stat-card rv">
+      <div class="stat-num" style="color:var(--teal)">3</div>
+      <div class="stat-lbl">Stages of scaffolding</div>
+      <p>Lesson → Guided practice → Mastery assessment.</p>
+    </div>
+    <div class="stat-card rv">
+      <div class="stat-num" style="color:var(--pt-lav-tx)">1</div>
+      <div class="stat-lbl">Socratic AI tutor</div>
+      <p>Targeted scaffolding to push students' thinking.</p>
+    </div>
+  </div>
+</section>
+
+<section class="compare" id="compare">
+  <div class="sec-heading" style="padding:0 0 56px">
+    <span class="pill-tag pt-coral rv">The old way vs. the Bloomy way</span>
+    <h2 class="rv">Same class.<br>Very different report card.</h2>
+  </div>
+  <div class="compare-grid">
+    <div class="report old rv">
+      <div class="rpt-head"><h3>Traditional pacing</h3></div>
+      <div class="rpt-row"><span>Lesson moves on when the calendar says so</span><span class="no">✗ gaps</span></div>
+      <div class="rpt-row"><span>Passed fractions with a 68%</span><span class="no">✗ shaky</span></div>
+      <div class="rpt-row"><span>Misconceptions never diagnosed</span><span class="no">✗ hidden</span></div>
+      <div class="rpt-row"><span>One pace for 28 different kids</span><span class="no">✗ unfair</span></div>
+    </div>
+    <div class="report new rv">
+      <div class="rpt-head"><h3>The Bloomy way</h3></div>
+      <div class="rpt-row"><span>Advance only after proving mastery</span><span class="yes">✓ 90%+</span></div>
+      <div class="rpt-row"><span>Adaptive practice tuned per student</span><span class="yes">✓ just right</span></div>
+      <div class="rpt-row"><span>Socratic AI finds the exact wrong turn</span><span class="yes">✓ diagnosed</span></div>
+      <div class="rpt-row"><span>28 kids, 28 personal paths</span><span class="yes">✓ fair</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="stickersheet" id="skills">
+  <div class="sec-heading" style="padding:0 0 56px">
+    <h2 class="rv">1,200+ skills to collect, K–12</h2>
+    <p class="rv">Standards-aligned to Common Core and your state's framework, with question formats that mirror the real tests.</p>
+  </div>
+  <div class="skills-grid">
+    <div class="skills-card ela rv">
+      <div class="skills-card-head">
+        <h3>English Language Arts</h3>
+        <div class="skills-total"><span data-count="700" data-prefix="~">0</span><small>skills · 6 domains</small></div>
+      </div>
+      <div class="skills-rows">
+        <div class="skills-row"><span class="skills-name">Writing</span><span class="skills-bar-track"><span class="skills-bar" data-w="100%"></span></span><span class="skills-num">~245</span></div>
+        <div class="skills-row"><span class="skills-name">Reading Literature</span><span class="skills-bar-track"><span class="skills-bar" data-w="43%"></span></span><span class="skills-num">~105</span></div>
+        <div class="skills-row"><span class="skills-name">Grammar</span><span class="skills-bar-track"><span class="skills-bar" data-w="41%"></span></span><span class="skills-num">~100</span></div>
+        <div class="skills-row"><span class="skills-name">Informational Text</span><span class="skills-bar-track"><span class="skills-bar" data-w="41%"></span></span><span class="skills-num">~100</span></div>
+        <div class="skills-row"><span class="skills-name">Mechanics</span><span class="skills-bar-track"><span class="skills-bar" data-w="33%"></span></span><span class="skills-num">~80</span></div>
+        <div class="skills-row"><span class="skills-name">Vocabulary</span><span class="skills-bar-track"><span class="skills-bar" data-w="27%"></span></span><span class="skills-num">~65</span></div>
+      </div>
+    </div>
+    <div class="skills-card math rv">
+      <div class="skills-card-head">
+        <h3>Mathematics</h3>
+        <div class="skills-total"><span data-count="500" data-suffix="+">0</span><small>skills · 5 strands</small></div>
+      </div>
+      <div class="skills-rows">
+        <div class="skills-row"><span class="skills-name">Geometry &amp; Measurement</span><span class="skills-bar-track"><span class="skills-bar" data-w="100%"></span></span><span class="skills-num">175+</span></div>
+        <div class="skills-row"><span class="skills-name">Early Numeracy</span><span class="skills-bar-track"><span class="skills-bar" data-w="86%"></span></span><span class="skills-num">150+</span></div>
+        <div class="skills-row"><span class="skills-name">Number System &amp; Algebra</span><span class="skills-bar-track"><span class="skills-bar" data-w="57%"></span></span><span class="skills-num">100+</span></div>
+        <div class="skills-row"><span class="skills-name">Fractions &amp; Proportional Reasoning</span><span class="skills-bar-track"><span class="skills-bar" data-w="26%"></span></span><span class="skills-num">45+</span></div>
+        <div class="skills-row"><span class="skills-name">Statistics &amp; Probability</span><span class="skills-bar-track"><span class="skills-bar" data-w="20%"></span></span><span class="skills-num">35+</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="curr-foot rv">
+    <span>K–12, every grade</span><span class="dotsep"></span>
+    <span>Common Core + state-specific</span><span class="dotsep"></span>
+    <span>Read-aloud &amp; dyslexia-friendly text sizing</span><span class="dotsep"></span>
+    <span>Full keyboard &amp; screen-reader support</span>
+  </div>
+</section>
+
+<section class="friends">
+  <div class="friends-head">
+    <div>
+      <h2 class="rv">Friends of Bloomy</h2>
+      <p class="rv">See what educators are saying.</p>
+    </div>
+  </div>
+  <div class="tweet-grid">
+    <div class="tweet rv">
+      <div class="who"><span class="av" style="background:#A895DD">KC</span><div><div class="nm">Kellie Carlucci</div><div class="hd">Director of Curriculum, Baystate Academy</div></div></div>
+      "Students are steadily progressing, with some now working at 11th- or 12th-grade level in domains. They're invested in the work."
+    </div>
+    <div class="tweet rv">
+      <div class="who"><span class="av" style="background:#8EC5DC">JT</span><div><div class="nm">Jessica Thomas</div><div class="hd">Principal, Edna M. Scott Elementary</div></div></div>
+      "Bloomy helps us differentiate while keeping students connected to grade-level expectations."
+    </div>
+    <div class="tweet rv">
+      <div class="who"><span class="av" style="background:#F4845F">PH</span><div><div class="nm">Phillip Hon</div><div class="hd">Founder, Unbound Stockton Community School</div></div></div>
+      "Our intervention block turned positive, and students get on-level ELA learning through genuinely high-quality texts."
+    </div>
+    <div class="tweet rv">
+      <div class="who"><span class="av" style="background:#F2B84B">✎</span><div><div class="nm">Grade 5 Teacher</div><div class="hd">Public elementary school</div></div></div>
+      "BloomyBot catching the exact misconception, instead of just marking it wrong, has changed how my re-teach groups work."
+    </div>
+    <div class="tweet rv">
+      <div class="who"><span class="av" style="background:#8FCBA0">✎</span><div><div class="nm">Middle School Math Dept.</div><div class="hd">District intervention team</div></div></div>
+      "Being able to just ask the dashboard a question instead of digging through spreadsheets saves us hours every week."
+    </div>
+    <div class="tweet rv">
+      <div class="who"><span class="av" style="background:#22374A">✎</span><div><div class="nm">Instructional Coach</div><div class="hd">K-8 charter network</div></div></div>
+      "The 90% bar sounds strict until you see how much confidence it builds. Kids know that when they've mastered something, they've actually mastered it."
+    </div>
+  </div>
+</section>
+
+<section class="faq" id="faq">
+  <div class="faq-grid">
+    <div class="faq-head">
+      <h2 class="rv">Frequently Asked Questions</h2>
+      <p class="rv">Everything you need to know before requesting a demo.</p>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item rv">
+        <div class="faq-q">Is Bloomy aligned to my state's standards? <span class="plus"></span></div>
+        <div class="faq-a"><p>Yes, every one of Bloomy's nearly 2,000 skills maps to Common Core or your state-specific framework, and question formats mirror your summative tests.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <div class="faq-q">Does BloomyBot replace teacher instruction? <span class="plus"></span></div>
+        <div class="faq-a"><p>No. BloomyBot is a Socratic AI tutor that scaffolds reasoning during independent practice. It's disabled entirely during Summit assessments, and every conversation is logged for teacher visibility.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <div class="faq-q">What subjects does Bloomy support? <span class="plus"></span></div>
+        <div class="faq-a"><p>English Language Arts (~700 skills across 6 domains) and Mathematics (~1,275 skills across 5 strands), covering grades K–12.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <div class="faq-q">How does the 90% mastery threshold work? <span class="plus"></span></div>
+        <div class="faq-a"><p>Students must score 90% or better on an independent Summit assessment, with no hints and no AI support, before advancing. Fall short, and Bloomy re-teaches the concept a different way.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <div class="faq-q">Is Bloomy accessible for all learners? <span class="plus"></span></div>
+        <div class="faq-a"><p>Yes, read-aloud across all content, adjustable dyslexia-friendly text sizing, full keyboard navigation, and complete screen-reader support are built in by default.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="footcta-sec">
+  <div class="footcta">
+    <div class="footcta-copy">
+      <div class="footcta-icons rv">
+        <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="#8FCBA0" stroke="#22374A" stroke-width="2"/></svg>
+        <svg viewBox="0 0 40 40"><path d="M20 4 L23.5 15.5 L36 15.5 L26 23 L29.5 35 L20 27.5 L10.5 35 L14 23 L4 15.5 L16.5 15.5 Z" fill="#F2B84B" stroke="#22374A" stroke-width="2" stroke-linejoin="round"/></svg>
+        <svg viewBox="0 0 40 40"><rect x="4" y="4" width="32" height="32" rx="10" fill="#F4845F" stroke="#22374A" stroke-width="2"/></svg>
+        <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="#8EC5DC" stroke="#22374A" stroke-width="2"/></svg>
+      </div>
+      <span class="sec-tag rv">Let's get started</span>
+      <h2 class="rv">Want to learn more?</h2>
+      <p class="rv">Schedule a demo to see how Bloomy can work for you. We'll walk you through everything you need to know in just 30 minutes.</p>
+    </div>
+    <form class="demo-form rv" onsubmit="return false">
+      <div class="form-row">
+        <div class="form-field"><label>Full name</label><input type="text" placeholder="Jane Rivera" required></div>
+      </div>
+      <div class="form-field"><label>Work email</label><input type="email" placeholder="jane@yourschool.org" required></div>
+      <div class="form-field"><label>School / District</label><input type="text" placeholder="Baystate Academy" required></div>
+      <div class="form-field"><label>Role</label>
+        <select>
+          <option>Teacher</option>
+          <option>Curriculum Director</option>
+          <option>Principal</option>
+          <option>District Administrator</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <button type="submit" class="pill solid big form-submit">Request a demo →</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <a class="logo" href="#">Bloomy</a>
+      <p>Mastery learning for every student. Designed in San Francisco, California.</p>
+    </div>
+    <div class="foot-cols">
+      <div class="foot-col">
+        <h5>Product</h5>
+        <a href="#explore">How it works</a>
+        <a href="#showcase">Curriculum</a>
+        <a href="#spotlights">BloomyBot</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="foot-col">
+        <h5>Schools</h5>
+        <a href="#">For districts</a>
+        <a href="#">For families</a>
+        <a href="#">Research base</a>
+        <a href="#">Accessibility</a>
+      </div>
+      <div class="foot-col">
+        <h5>Company</h5>
+        <a href="#">About</a>
+        <a href="mailto:hello@bloomylearning.com">Contact</a>
+        <a href="#">Privacy</a>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Bloomy Learning, Inc.</span>
+    <span>Mastery learning for every student.</span>
+  </div>
+</footer>
+
+<script src="../shared/vendor/gsap.min.js"></script>
+<script src="../shared/vendor/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* nav */
+const nav=document.getElementById('nav');
+
+/* hero intro */
+gsap.timeline({defaults:{ease:'power4.out'}})
+  .to('.hero-chip',{opacity:1,y:0,duration:.8},0)
+  .from('.hero-mid h1',{y:40,opacity:0,duration:1},.15)
+  .to('.hero-mid p',{opacity:1,y:0,duration:.9},.45)
+  .to('.hero-ctas',{opacity:1,y:0,duration:.9},.6)
+  .to('.hero-note',{opacity:1,y:0,duration:.9},.75)
+  .from('.hero-cluster .wfloat, .hero-cluster > svg:first-child',{scale:0,opacity:0,duration:1,stagger:.06,ease:'back.out(1.8)'},.3);
+
+/* swoosh underline draw */
+(function(){
+  const sw=document.querySelector('.swoosh');
+  if(!sw)return;
+  const len=sw.getTotalLength();
+  gsap.set(sw,{strokeDasharray:len,strokeDashoffset:len});
+  gsap.to(sw,{strokeDashoffset:0,duration:.8,ease:'power2.inOut',delay:1.1});
+})();
+
+/* hero cluster mouse parallax + idle drift */
+document.querySelectorAll('.hero-cluster svg').forEach(el=>{
+  const dx=+el.dataset.x||0, dy=+el.dataset.y||0;
+  gsap.to(el,{y:'+='+(dy*.3),duration:2.6+Math.random()*1.4,yoyo:true,repeat:-1,ease:'sine.inOut'});
+});
+addEventListener('mousemove',e=>{
+  const mx=e.clientX/innerWidth-.5;
+  document.querySelectorAll('.hero-cluster svg').forEach(el=>{
+    const dx=+el.dataset.x||0;
+    gsap.to(el,{x:mx*dx,duration:1.2,overwrite:'auto'});
+  });
+});
+/* hero illustration animations (ported from direction 2's world scene) */
+gsap.to('.hero-cluster .drift > g',{rotation:6,transformOrigin:'50% 50%',duration:3.4,yoyo:true,repeat:-1,ease:'sine.inOut'});
+gsap.to('.hero-cluster .coin',{scaleX:.15,transformOrigin:'50% 50%',duration:1.1,yoyo:true,repeat:-1,repeatDelay:2.4,ease:'sine.inOut'});
+gsap.to('.hero-cluster .spark',{scale:1.15,opacity:.55,transformOrigin:'50% 50%',duration:1.3,yoyo:true,repeat:-1,ease:'sine.inOut'});
+gsap.to('#star-prize',{scale:1.1,rotation:8,transformOrigin:'50% 50%',duration:1.6,yoyo:true,repeat:-1,ease:'sine.inOut'});
+(function(){
+  const dot=document.getElementById('orbit-dot');
+  if(!dot)return;
+  const cx=785,cy=300,rx=88,ry=26;
+  gsap.to({a:0},{a:Math.PI*2,duration:9,repeat:-1,ease:'none',onUpdate:function(){
+    const a=this.targets()[0].a;
+    dot.setAttribute('cx',cx+Math.cos(a)*rx);
+    dot.setAttribute('cy',cy+Math.sin(a)*ry);
+  }});
+})();
+
+/* generic reveals (skip elements with their own bespoke reveal logic) */
+document.querySelectorAll('.rv').forEach(el=>{
+  if(el.closest('.hero-mid'))return;
+  if(el.classList.contains('phone'))return;
+  gsap.to(el,{opacity:1,y:0,duration:.9,ease:'power3.out',
+    scrollTrigger:{trigger:el,start:'top 89%'}});
+});
+
+/* statement word-by-word reveal */
+const st=document.getElementById('statement-text');
+(function(){
+  const frag=document.createDocumentFragment();
+  st.childNodes.forEach(n=>{
+    if(n.nodeType===3){
+      n.textContent.split(/\s+/).filter(Boolean).forEach(w=>{
+        const s=document.createElement('span');s.className='word';s.textContent=w;
+        frag.appendChild(s);frag.appendChild(document.createTextNode(' '));
+      });
+    } else frag.appendChild(n.cloneNode(true));
+  });
+  st.innerHTML='';st.appendChild(frag);
+})();
+gsap.fromTo('#statement-text .word, #statement-text .hl',{opacity:.16},{opacity:1,stagger:.06,ease:'none',
+  scrollTrigger:{trigger:'.statement',start:'top 75%',end:'top 20%',scrub:true}});
+const scribble=document.querySelector('.scribble');
+if(scribble){const len=scribble.getTotalLength();
+  gsap.set(scribble,{strokeDasharray:len,strokeDashoffset:len});
+  gsap.to(scribble,{strokeDashoffset:0,duration:1,ease:'power2.inOut',
+    scrollTrigger:{trigger:'.statement',start:'top 35%'}});}
+
+/* counters (curriculum panels + sticker sheet) */
+document.querySelectorAll('[data-count]').forEach(el=>{
+  const target=+el.dataset.count,prefix=el.dataset.prefix||'',suffix=el.dataset.suffix||'';
+  ScrollTrigger.create({trigger:el,start:'top 88%',once:true,onEnter:()=>{
+    gsap.to({v:0},{v:target,duration:1.8,ease:'power2.out',onUpdate:function(){
+      el.textContent=prefix+Math.round(this.targets()[0].v).toLocaleString()+suffix;}});
+  }});
+});
+
+/* skills bars: reveal ELA/Math cards then grow bars to their target width */
+document.querySelectorAll('.skills-card').forEach(card=>{
+  ScrollTrigger.create({trigger:card,start:'top 82%',once:true,onEnter:()=>{
+    card.querySelectorAll('.skills-bar').forEach((bar,i)=>{
+      gsap.to(bar,{width:bar.dataset.w,duration:1,ease:'power3.out',delay:i*.08});
+    });
+  }});
+});
+
+/* FAQ accordion */
+document.querySelectorAll('.faq-item').forEach(item=>{
+  const a=item.querySelector('.faq-a');
+  item.querySelector('.faq-q').addEventListener('click',()=>{
+    const isOpen=item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(o=>{o.classList.remove('open');o.querySelector('.faq-a').style.maxHeight=null;});
+    if(!isOpen){item.classList.add('open');a.style.maxHeight=a.scrollHeight+'px';}
+  });
+});
+
+/* magnetic pills */
+document.querySelectorAll('.pill.solid').forEach(b=>{
+  b.addEventListener('mousemove',e=>{
+    const r=b.getBoundingClientRect();
+    gsap.to(b,{x:(e.clientX-r.left-r.width/2)*.2,y:(e.clientY-r.top-r.height/2)*.3,duration:.4});
+  });
+  b.addEventListener('mouseleave',()=>gsap.to(b,{x:0,y:0,duration:.6,ease:'elastic.out(1,.4)'}));
+});
+
+/* smooth anchors */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const id=a.getAttribute('href');if(id.length<2)return;
+    const t=document.querySelector(id);if(!t)return;
+    e.preventDefault();t.scrollIntoView({behavior:'smooth'});
+  });
+});
+</script>
+</body>
+</html>

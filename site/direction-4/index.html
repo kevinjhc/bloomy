@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloomy — Mastery learning your students will love</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#121212;
+  --ink-soft:#63636B;
+  --line:#EBEBE8;
+  --white:#FFFFFF;
+  --gray:#F6F6F3;
+  --gray-deep:#EFEFEA;
+  --blue:#4FC3F7;
+  --blue-deep:#2AA8DE;
+  --orange:#FF5B3F;
+  --gold:#FFC94A;
+  --green:#3DD68C;
+  --lav:#9B8CFF;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--white);color:var(--ink);
+  overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--gold);color:var(--ink)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+img{max-width:100%}
+
+/* nav */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 40px;max-width:1360px;margin:0 auto;
+}
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:19px;letter-spacing:-.01em}
+.logo svg{width:26px;height:26px}
+.nav-links{display:flex;gap:30px;align-items:center;font-size:15px;font-weight:600;color:var(--ink)}
+.nav-links a.nl{opacity:.75;transition:opacity .25s}
+.nav-links a.nl:hover{opacity:1}
+.nav-right{display:flex;align-items:center;gap:10px}
+.pill{
+  display:inline-flex;align-items:center;gap:8px;border-radius:100px;padding:11px 20px;
+  font-size:14.5px;font-weight:700;transition:transform .25s cubic-bezier(.34,1.56,.64,1),background .25s;
+}
+.pill:hover{transform:translateY(-2px)}
+.pill.ghost{background:var(--gray);color:var(--ink)}
+.pill.ghost:hover{background:var(--gray-deep)}
+.pill.solid{background:var(--ink);color:#fff}
+.pill.solid:hover{background:#000}
+.pill.big{padding:16px 28px;font-size:16px}
+@media(max-width:900px){.nav-links{display:none}}
+
+/* hero */
+.hero{position:relative;padding:50px 24px 10px;max-width:1360px;margin:0 auto;overflow:visible}
+.hero-grid{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;min-height:520px}
+@media(max-width:980px){.hero-grid{grid-template-columns:1fr}}
+.hero-cluster{position:relative;height:520px}
+@media(max-width:980px){.hero-cluster{display:none}}
+.hero-cluster svg{position:absolute;overflow:visible;will-change:transform}
+.hero-mid{text-align:center;max-width:640px;padding:0 10px}
+.hero-mid h1{font-size:clamp(38px,5.2vw,64px);font-weight:800;letter-spacing:-.03em;line-height:1.04}
+.hero-mid p{margin-top:20px;font-size:17.5px;line-height:1.55;color:var(--ink-soft);font-weight:500;max-width:46ch;margin-left:auto;margin-right:auto}
+.hero-ctas{margin-top:32px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* section heading (centered, family.co style) */
+.sec-heading{text-align:center;padding:100px 24px 56px;max-width:900px;margin:0 auto}
+.sec-heading h2{font-size:clamp(28px,3.6vw,44px);font-weight:800;letter-spacing:-.025em;line-height:1.12}
+.sec-heading p{margin-top:16px;font-size:16.5px;color:var(--ink-soft);font-weight:500;line-height:1.6}
+.sec-tag{display:inline-block;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--blue-deep);margin-bottom:14px}
+
+/* 4-card grid (dark mockup cards) */
+.card-grid{max-width:1360px;margin:0 auto;padding:0 24px 40px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+@media(max-width:1080px){.card-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.card-grid{grid-template-columns:1fr}}
+.mock-card{background:var(--gray);border-radius:22px;padding:20px;transition:transform .4s cubic-bezier(.34,1.4,.64,1)}
+.mock-card:hover{transform:translateY(-6px)}
+.mock-shot{
+  background:#17181C;border-radius:16px;padding:22px 18px;min-height:190px;
+  display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;
+}
+.mock-row{display:flex;align-items:center;gap:12px;background:#212227;border-radius:12px;padding:12px 14px}
+.mock-row .ico{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none}
+.mock-row .tx{color:#fff}
+.mock-row .tx .t{font-size:13.5px;font-weight:700}
+.mock-row .tx .d{font-size:11.5px;color:#9A9AA2;margin-top:2px;line-height:1.4}
+.mock-card h3{margin-top:18px;font-size:17px;font-weight:800;letter-spacing:-.01em}
+.mock-card p{margin-top:6px;font-size:13.5px;color:var(--ink-soft);font-weight:500;line-height:1.5}
+.mock-tag{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:11.5px;font-weight:800;color:var(--ink-soft);letter-spacing:.04em}
+
+/* tabbed phone showcase */
+.showcase{max-width:1200px;margin:0 auto;padding:20px 24px 120px;text-align:center}
+.showcase h2{font-size:clamp(28px,3.8vw,46px);font-weight:800;letter-spacing:-.025em;line-height:1.1;margin-bottom:56px}
+.phones-row{display:flex;gap:26px;justify-content:center;align-items:flex-end;flex-wrap:wrap}
+.phone{
+  width:220px;background:#111;border-radius:34px;padding:10px;box-shadow:0 40px 80px -30px rgba(0,0,0,.35);
+  transition:transform .45s cubic-bezier(.34,1.2,.64,1),opacity .45s;
+}
+.phone.dim{opacity:.5;transform:scale(.94)}
+.phone-screen{background:var(--white);border-radius:24px;overflow:hidden;aspect-ratio:9/18.5;position:relative}
+.phone-screen .bar{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:70px;height:6px;background:#111;border-radius:4px;z-index:3}
+.phone-tab{margin-top:18px;display:inline-flex;align-items:center;gap:8px;background:var(--gray);border-radius:100px;padding:9px 18px;font-size:13.5px;font-weight:700;cursor:pointer;transition:background .25s,color .25s}
+.phone-tab.active{background:var(--ink);color:#fff}
+.phone-tab .dot{width:7px;height:7px;border-radius:50%}
+
+/* dense feature grid (gray section) */
+.dense-sec{background:var(--gray);padding:110px 24px}
+.dense-inner{max-width:1200px;margin:0 auto}
+.dense-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+@media(max-width:860px){.dense-grid{grid-template-columns:1fr}}
+.dense-item{padding:42px 40px;border-top:1px solid var(--line)}
+.dense-grid .dense-item:nth-child(1),.dense-grid .dense-item:nth-child(2){border-top:none}
+.dense-item .tag{font-size:12.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px;display:inline-block}
+.dense-item h3{font-size:22px;font-weight:800;letter-spacing:-.015em;line-height:1.2;max-width:24ch}
+.dense-item p{margin-top:10px;font-size:15px;color:var(--ink-soft);font-weight:500;line-height:1.55;max-width:38ch}
+.dense-visual{margin-top:20px;display:flex;align-items:center;gap:10px}
+.dense-stat{font-size:30px;font-weight:800;letter-spacing:-.02em}
+.dense-stat small{font-size:14px;font-weight:700;color:var(--ink-soft);margin-left:6px}
+.mini-track{margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700}
+.mini-track .mt-dot{width:8px;height:8px;border-radius:50%}
+
+/* alternating spotlight rows */
+.spot{max-width:1200px;margin:0 auto;padding:130px 24px}
+.spot-row{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center}
+@media(max-width:900px){.spot-row{grid-template-columns:1fr;gap:40px}}
+.spot-row.rev .spot-media{order:2}
+.spot-row.rev .spot-text{order:1}
+@media(max-width:900px){.spot-row.rev .spot-media,.spot-row.rev .spot-text{order:initial}}
+.spot-media{display:flex;justify-content:center}
+.spot-shot{
+  width:100%;max-width:400px;background:#111;border-radius:26px;padding:16px;
+  box-shadow:0 50px 90px -30px rgba(0,0,0,.3);
+}
+.spot-shot .inner{background:#fff;border-radius:18px;padding:20px;min-height:340px}
+.spot-tag{font-size:12.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px;display:inline-block}
+.spot-text h3{font-size:clamp(26px,3vw,36px);font-weight:800;letter-spacing:-.02em;line-height:1.12;max-width:14ch}
+.spot-text p{margin-top:16px;font-size:16px;line-height:1.6;color:var(--ink-soft);font-weight:500;max-width:42ch}
+.spot-bullets{margin-top:22px;display:flex;flex-direction:column;gap:12px}
+.spot-bullets .b{display:flex;gap:10px;align-items:center;font-size:14.5px;font-weight:700}
+.spot-demo{margin-top:26px;display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:14.5px;position:relative}
+.spot-demo::after{content:'';position:absolute;left:0;bottom:-3px;width:100%;height:2px;background:var(--ink);transform:scaleX(.4);transform-origin:left;transition:transform .3s}
+.spot-demo:hover::after{transform:scaleX(1)}
+
+/* illustration + checklist row */
+.illorow{max-width:1200px;margin:0 auto;padding:60px 24px 130px;display:grid;grid-template-columns:.85fr 1.15fr;gap:70px;align-items:center}
+@media(max-width:900px){.illorow{grid-template-columns:1fr}}
+.illo-stage{background:var(--gray);border-radius:30px;padding:50px;display:flex;justify-content:center}
+.illo-stage svg{width:220px;height:auto;overflow:visible}
+.illo-text h2{font-size:clamp(28px,3.6vw,42px);font-weight:800;letter-spacing:-.025em;line-height:1.14}
+.illo-text p{margin-top:18px;font-size:16.5px;color:var(--ink-soft);font-weight:500;line-height:1.6;max-width:44ch}
+.check-grid{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:520px){.check-grid{grid-template-columns:1fr}}
+.check-item{display:flex;gap:10px;align-items:center;font-weight:700;font-size:14.5px}
+.check-item svg{flex:none}
+
+/* 3-col mockup row */
+.tri-sec{max-width:1200px;margin:0 auto;padding:20px 24px 130px;text-align:center}
+.tri-sec h2{font-size:clamp(28px,3.8vw,44px);font-weight:800;letter-spacing:-.025em;line-height:1.1;margin-bottom:56px}
+.tri-row{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media(max-width:860px){.tri-row{grid-template-columns:1fr;max-width:340px;margin:0 auto}}
+.tri-card{background:var(--gray);border-radius:24px;padding:18px}
+.tri-shot{background:#111;border-radius:18px;padding:14px;aspect-ratio:9/13}
+.tri-shot .inner{background:#fff;border-radius:12px;height:100%;padding:16px}
+.tri-label{margin-top:14px;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;justify-content:center}
+.tri-label .dot{width:8px;height:8px;border-radius:50%}
+
+/* blog */
+.blog{background:var(--gray);padding:110px 24px}
+.blog-inner{max-width:1000px;margin:0 auto}
+.blog h2{font-size:clamp(26px,3.2vw,38px);font-weight:800;letter-spacing:-.02em;margin-bottom:44px}
+.blog-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:760px){.blog-grid{grid-template-columns:1fr}}
+.blog-card{background:#fff;border-radius:20px;overflow:hidden;transition:transform .35s cubic-bezier(.34,1.4,.64,1)}
+.blog-card:hover{transform:translateY(-6px)}
+.blog-thumb{height:150px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.blog-thumb svg{width:80px;height:80px}
+.blog-body{padding:24px 26px 28px}
+.blog-body .date{font-size:12.5px;font-weight:700;color:var(--ink-soft)}
+.blog-body h3{margin-top:10px;font-size:18px;font-weight:800;letter-spacing:-.01em;line-height:1.3}
+.blog-body p{margin-top:10px;font-size:14px;color:var(--ink-soft);font-weight:500;line-height:1.55}
+
+/* details that matter — stacked */
+.details{max-width:1000px;margin:0 auto;padding:130px 24px}
+.details h2{text-align:center;font-size:clamp(28px,3.8vw,44px);font-weight:800;letter-spacing:-.025em;margin-bottom:80px}
+.d-row{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;padding:64px 0;border-top:1px solid var(--line)}
+.details .d-row:first-of-type{border-top:none}
+@media(max-width:860px){.d-row{grid-template-columns:1fr;gap:30px}}
+.d-row.rev .d-media{order:2}
+.d-row.rev .d-text{order:1}
+@media(max-width:860px){.d-row.rev .d-media,.d-row.rev .d-text{order:initial}}
+.d-text h3{font-size:22px;font-weight:800;letter-spacing:-.015em;line-height:1.25;max-width:20ch}
+.d-text p{margin-top:12px;font-size:15px;color:var(--ink-soft);font-weight:500;line-height:1.6;max-width:40ch}
+.d-media{background:var(--gray);border-radius:20px;padding:28px;min-height:180px;display:flex;align-items:center;justify-content:center}
+
+/* testimonial wall */
+.friends{padding:120px 24px;max-width:1240px;margin:0 auto}
+.friends-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:50px}
+.friends-head h2{font-size:clamp(26px,3.2vw,38px);font-weight:800;letter-spacing:-.02em}
+.friends-head p{color:var(--ink-soft);font-weight:600;font-size:15px;margin-top:8px}
+.tweet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:960px){.tweet-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.tweet-grid{grid-template-columns:1fr}}
+.tweet{background:var(--gray);border-radius:18px;padding:22px 22px 20px;font-size:14.5px;line-height:1.55;font-weight:500;transition:transform .3s cubic-bezier(.34,1.4,.64,1)}
+.tweet:hover{transform:translateY(-4px)}
+.tweet .who{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.tweet .who .av{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px}
+.tweet .who .nm{font-weight:800;font-size:13.5px}
+.tweet .who .hd{font-size:12.5px;color:var(--ink-soft);font-weight:600}
+
+/* FAQ */
+.faq{max-width:900px;margin:0 auto;padding:120px 24px}
+.faq-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:50px}
+@media(max-width:760px){.faq-grid{grid-template-columns:1fr}}
+.faq-head h2{font-size:clamp(26px,3.4vw,38px);font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.faq-head p{margin-top:14px;color:var(--ink-soft);font-weight:500;font-size:15px;line-height:1.6}
+.faq-list{display:flex;flex-direction:column}
+.faq-item{border-top:1px solid var(--line);padding:22px 0}
+.faq-list .faq-item:last-child{border-bottom:1px solid var(--line)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;gap:16px;cursor:pointer;font-weight:700;font-size:16px}
+.faq-q .plus{width:22px;height:22px;flex:none;position:relative}
+.faq-q .plus::before,.faq-q .plus::after{content:'';position:absolute;background:var(--ink);border-radius:2px;transition:transform .3s}
+.faq-q .plus::before{top:50%;left:0;width:100%;height:2px;transform:translateY(-50%)}
+.faq-q .plus::after{left:50%;top:0;width:2px;height:100%;transform:translateX(-50%)}
+.faq-item.open .plus::after{transform:translateX(-50%) rotate(90deg);opacity:0}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.faq-a p{padding-top:14px;font-size:15px;color:var(--ink-soft);font-weight:500;line-height:1.6;max-width:56ch}
+
+/* footer cta */
+.footcta{background:var(--gray);border-radius:36px;max-width:1240px;margin:0 auto 24px;padding:90px 24px;text-align:center;position:relative;overflow:hidden}
+.footcta-icons{display:flex;justify-content:center;gap:16px;margin-bottom:26px}
+.footcta-icons svg{width:40px;height:40px}
+.footcta h2{font-size:clamp(28px,4vw,48px);font-weight:800;letter-spacing:-.025em}
+.footcta p{margin-top:14px;color:var(--ink-soft);font-weight:600;font-size:15.5px}
+.footcta .pill{margin-top:28px}
+
+footer{padding:60px 40px 36px}
+.foot-grid{max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap}
+.foot-brand p{margin-top:12px;font-size:14px;color:var(--ink-soft);max-width:26ch;line-height:1.55;font-weight:500}
+.foot-cols{display:flex;gap:70px;flex-wrap:wrap}
+.foot-col h5{font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:16px}
+.foot-col a{display:block;font-size:14.5px;font-weight:600;margin-bottom:11px}
+.foot-col a:hover{color:var(--orange)}
+.foot-bottom{max-width:1240px;margin:40px auto 0;border-top:1px solid var(--line);padding-top:22px;
+  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-soft);font-weight:600}
+
+.rv{opacity:0;transform:translateY(34px)}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a class="logo" href="#">
+    <svg viewBox="0 0 32 32" fill="none">
+      <g stroke="#121212" stroke-width="1.6">
+        <circle cx="16" cy="9.5" r="4" fill="#FF5B3F"/>
+        <circle cx="22" cy="13.6" r="4" fill="#FFC94A"/>
+        <circle cx="19.7" cy="20.6" r="4" fill="#9B8CFF"/>
+        <circle cx="12.3" cy="20.6" r="4" fill="#3DD68C"/>
+        <circle cx="10" cy="13.6" r="4" fill="#4FC3F7"/>
+        <circle cx="16" cy="16" r="3" fill="#fff"/>
+      </g>
+    </svg>
+    Bloomy
+  </a>
+  <div class="nav-links">
+    <a class="nl" href="#explore">How it works</a>
+    <a class="nl" href="#showcase">Curriculum</a>
+    <a class="nl" href="#spotlights">BloomyBot</a>
+    <a class="nl" href="#faq">FAQ</a>
+  </div>
+  <div class="nav-right">
+    <a href="#" class="pill ghost">Sign in</a>
+    <a href="#" class="pill solid">Get Started</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-grid">
+    <div class="hero-cluster" id="cluster-left">
+      <!-- flower mascot -->
+      <svg data-x="30" data-y="70" style="left:20%;top:12%;width:190px;height:190px" viewBox="0 0 190 190">
+        <g stroke="#121212" stroke-width="2.2" stroke-linejoin="round">
+          <path d="M95 186 C 95 160 90 150 95 130" stroke-width="7" stroke-linecap="round" fill="none"/>
+          <path d="M60 178 C 55 172 58 165 65 165" fill="none" stroke-linecap="round"/>
+          <path d="M130 178 C 135 172 132 165 125 165" fill="none" stroke-linecap="round"/>
+          <circle cx="61" cy="182" r="6" fill="#FFC94A"/><circle cx="129" cy="182" r="6" fill="#FFC94A"/>
+        </g>
+        <g id="cluster-flower" transform="translate(95,88)">
+          <circle cx="0" cy="-30" r="24" fill="#FF5B3F" stroke="#121212" stroke-width="2.2"/>
+          <circle cx="28" cy="-9" r="24" fill="#FFC94A" stroke="#121212" stroke-width="2.2"/>
+          <circle cx="17.5" cy="24" r="24" fill="#9B8CFF" stroke="#121212" stroke-width="2.2"/>
+          <circle cx="-17.5" cy="24" r="24" fill="#3DD68C" stroke="#121212" stroke-width="2.2"/>
+          <circle cx="-28" cy="-9" r="24" fill="#4FC3F7" stroke="#121212" stroke-width="2.2"/>
+          <circle cx="0" cy="0" r="18" fill="#fff" stroke="#121212" stroke-width="2.2"/>
+          <circle cx="-6" cy="-3" r="2.4" fill="#121212"/><circle cx="6" cy="-3" r="2.4" fill="#121212"/>
+          <path d="M-6 6 Q0 10 6 6" stroke="#121212" stroke-width="2" fill="none" stroke-linecap="round"/>
+        </g>
+      </svg>
+      <svg class="wfloat" data-x="46" data-y="6" style="left:4%;top:6%;width:54px" viewBox="0 0 54 54"><circle cx="27" cy="27" r="24" fill="#FFC94A" stroke="#121212" stroke-width="2"/><path d="M27 15 L30 24 L39 24 L32 30 L34.5 39 L27 33.5 L19.5 39 L22 30 L15 24 L24 24 Z" fill="#fff"/></svg>
+      <svg class="wfloat" data-x="-30" data-y="24" style="left:66%;top:4%;width:46px" viewBox="0 0 46 46"><rect x="4" y="4" width="38" height="38" rx="10" fill="#4FC3F7" stroke="#121212" stroke-width="2"/><path d="M14 23 L20 29 L33 16" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg class="wfloat" data-x="20" data-y="-30" style="left:2%;top:46%;width:60px" viewBox="0 0 60 60"><g stroke="#121212" stroke-width="2" stroke-linejoin="round"><rect x="14" y="10" width="32" height="40" rx="5" fill="#fff"/><line x1="21" y1="22" x2="39" y2="22"/><line x1="21" y1="30" x2="39" y2="30"/><line x1="21" y1="38" x2="32" y2="38"/></g></svg>
+      <svg class="wfloat" data-x="-16" data-y="40" style="left:72%;top:36%;width:50px" viewBox="0 0 50 50"><circle cx="25" cy="25" r="22" fill="#FF5B3F" stroke="#121212" stroke-width="2"/></svg>
+      <svg class="wfloat" data-x="34" data-y="20" style="left:10%;top:74%;width:44px" viewBox="0 0 44 44"><path d="M22 4 L27 17 L41 17 L30 26 L34 40 L22 31 L10 40 L14 26 L3 17 L17 17 Z" fill="#3DD68C" stroke="#121212" stroke-width="2" stroke-linejoin="round"/></svg>
+      <svg class="wfloat" data-x="-24" data-y="-14" style="left:58%;top:70%;width:38px" viewBox="0 0 38 38"><circle cx="19" cy="19" r="16" fill="none" stroke="#9B8CFF" stroke-width="3"/></svg>
+      <svg class="wfloat" data-x="12" data-y="34" style="left:34%;top:84%;width:30px" viewBox="0 0 30 30"><path d="M15 3 L18 12 L27 12 L20 18 L23 27 L15 21 L7 27 L10 18 L3 12 L12 12 Z" fill="#FFC94A"/></svg>
+    </div>
+
+    <div class="hero-mid">
+      <h1>Mastery learning<br>your students will love.</h1>
+      <p class="rv">Bloomy's AI teaches every student exactly what they need to know, when they need to know it. Interacting with mastery has never been this simple.</p>
+      <div class="hero-ctas rv">
+        <a href="#" class="pill solid big">✦ Request a Demo</a>
+        <a href="#" class="pill ghost big">▶ Watch the Video</a>
+      </div>
+    </div>
+
+    <div class="hero-cluster" id="cluster-right">
+      <!-- bot mascot -->
+      <svg data-x="-30" data-y="60" style="right:18%;top:14%;width:180px;height:180px" viewBox="0 0 180 180">
+        <g id="cluster-bot">
+          <g stroke="#121212" stroke-width="2.2" stroke-linejoin="round">
+            <line x1="90" y1="42" x2="90" y2="20"/>
+            <circle cx="90" cy="14" r="8" fill="#FF5B3F"/>
+            <rect x="46" y="42" width="88" height="70" rx="22" fill="#fff"/>
+            <rect x="58" y="58" width="64" height="38" rx="12" fill="#121212" stroke="none"/>
+          </g>
+          <circle cx="76" cy="77" r="6" fill="#4FC3F7"/><circle cx="104" cy="77" r="6" fill="#4FC3F7"/>
+          <path d="M80 105 Q90 111 100 105" stroke="#121212" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+          <g stroke="#121212" stroke-width="2.2" stroke-linejoin="round">
+            <rect x="60" y="112" width="60" height="40" rx="14" fill="#4FC3F7"/>
+            <circle cx="90" cy="132" r="8" fill="#FFC94A"/>
+          </g>
+          <g stroke="#121212" stroke-width="2.2" stroke-linecap="round">
+            <path d="M122 122 C 138 118 146 106 148 94" fill="none"/>
+            <circle cx="149" cy="90" r="6" fill="#FF5B3F"/>
+            <path d="M58 124 C 46 128 40 138 40 148" fill="none"/>
+            <circle cx="40" cy="152" r="6" fill="#FF5B3F"/>
+          </g>
+        </g>
+      </svg>
+      <svg class="wfloat" data-x="-40" data-y="8" style="right:2%;top:4%;width:50px" viewBox="0 0 50 50"><g stroke="#121212" stroke-width="2" stroke-linejoin="round"><rect x="8" y="8" width="16" height="16" rx="4" fill="#9B8CFF"/><rect x="26" y="8" width="16" height="16" rx="4" fill="#FFC94A"/><rect x="8" y="26" width="16" height="16" rx="4" fill="#FF5B3F"/><rect x="26" y="26" width="16" height="16" rx="4" fill="#3DD68C"/></g></svg>
+      <svg class="wfloat" data-x="24" data-y="20" style="right:64%;top:2%;width:44px" viewBox="0 0 44 44"><circle cx="22" cy="22" r="19" fill="#3DD68C" stroke="#121212" stroke-width="2"/><path d="M14 22 L19 27 L30 15" stroke="#fff" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg class="wfloat" data-x="-18" data-y="30" style="right:4%;top:48%;width:56px" viewBox="0 0 56 56"><g stroke="#121212" stroke-width="2" stroke-linejoin="round"><circle cx="24" cy="24" r="12" fill="none"/><line x1="33" y1="33" x2="44" y2="44" stroke-linecap="round" stroke-width="3"/></g></svg>
+      <svg class="wfloat" data-x="18" data-y="-24" style="right:70%;top:40%;width:42px" viewBox="0 0 42 42"><circle cx="21" cy="21" r="18" fill="#FFC94A" stroke="#121212" stroke-width="2"/></svg>
+      <svg class="wfloat" data-x="-28" data-y="14" style="right:14%;top:76%;width:48px" viewBox="0 0 48 48"><g stroke="#121212" stroke-width="2" stroke-linejoin="round"><rect x="8" y="8" width="32" height="32" rx="8" fill="#FF5B3F"/></g></svg>
+      <svg class="wfloat" data-x="20" data-y="30" style="right:56%;top:72%;width:34px" viewBox="0 0 34 34"><path d="M17 3 L20.5 13.5 L31 13.5 L22.5 20 L26 30.5 L17 24 L8 30.5 L11.5 20 L3 13.5 L13.5 13.5 Z" fill="#4FC3F7"/></svg>
+    </div>
+  </div>
+</header>
+
+<section class="sec-heading" id="explore">
+  <h2 class="rv">Explore mastery in a whole new way.</h2>
+</section>
+
+<div class="card-grid">
+  <div class="mock-card rv">
+    <div class="mock-shot">
+      <div class="mock-row"><div class="ico" style="background:#3DD68C"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M4 19.5V6a2 2 0 0 1 2-2h9l5 5v10.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M8 8h6M8 12h8M8 16h5"/></svg></div><div class="tx"><div class="t">Base Camp</div><div class="d">Concept instruction with worked examples.</div></div></div>
+    </div>
+    <h3>Learn it</h3>
+    <p>Clear think-aloud modeling, then a quick check for understanding.</p>
+    <span class="mock-tag">~8 MIN · EVERY SKILL</span>
+  </div>
+  <div class="mock-card rv">
+    <div class="mock-shot">
+      <div class="mock-row"><div class="ico" style="background:#FFC94A"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#121212" stroke-width="2.4" stroke-linecap="round"><path d="M4 20 L4 14 M10 20 L10 8 M16 20 L16 4 M22 20 L22 11"/></svg></div><div class="tx"><div class="t">Climb</div><div class="d">Difficulty adapts to each student, live.</div></div></div>
+    </div>
+    <h3>Practice it</h3>
+    <p>Three levels of scaffolding — never too easy, never too hard.</p>
+    <span class="mock-tag">ADAPTIVE · ZPD-TUNED</span>
+  </div>
+  <div class="mock-card rv">
+    <div class="mock-shot">
+      <div class="mock-row"><div class="ico" style="background:#FF5B3F"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div><div class="tx"><div class="t">Summit</div><div class="d">Independent mastery check — no hints.</div></div></div>
+    </div>
+    <h3>Prove it</h3>
+    <p>Score 90% or better and the skill is permanently yours.</p>
+    <span class="mock-tag">90% BAR · NO AI HELP</span>
+  </div>
+  <div class="mock-card rv">
+    <div class="mock-shot">
+      <div class="mock-row"><div class="ico" style="background:#4FC3F7"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M4 19h16M8 19V9M14 19V5M20 19v-7"/></svg></div><div class="tx"><div class="t">Insights</div><div class="d">Ask your dashboard a question, in English.</div></div></div>
+    </div>
+    <h3>Track it</h3>
+    <p>Real-time teacher dashboards with AI-powered grouping.</p>
+    <span class="mock-tag">LIVE · TEACHER-FACING</span>
+  </div>
+</div>
+
+<section class="showcase" id="showcase">
+  <h2 class="rv">Learn, practice, master.<br>All in one place.</h2>
+  <div class="phones-row">
+    <div class="phone rv" data-phone="0">
+      <div class="phone-screen"><span class="bar"></span><div id="screen-0"></div></div>
+    </div>
+    <div class="phone dim rv" data-phone="1">
+      <div class="phone-screen"><span class="bar"></span><div id="screen-1"></div></div>
+    </div>
+    <div class="phone dim rv" data-phone="2">
+      <div class="phone-screen"><span class="bar"></span><div id="screen-2"></div></div>
+    </div>
+  </div>
+  <div style="margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+    <span class="phone-tab active" data-tab="0"><span class="dot" style="background:#3DD68C"></span> Base Camp</span>
+    <span class="phone-tab" data-tab="1"><span class="dot" style="background:#FFC94A"></span> Climb</span>
+    <span class="phone-tab" data-tab="2"><span class="dot" style="background:#FF5B3F"></span> Summit</span>
+  </div>
+</section>
+
+<section class="dense-sec">
+  <div class="dense-inner">
+    <div class="sec-heading" style="padding:0 0 60px">
+      <span class="sec-tag rv">Whatever the student, whatever the gap</span>
+      <h2 class="rv">Whether on grade level or three years behind, Bloomy makes it work.</h2>
+    </div>
+    <div class="dense-grid">
+      <div class="dense-item rv">
+        <span class="tag" style="color:var(--blue-deep)">Adaptive</span>
+        <h3>Meets every student exactly where they are.</h3>
+        <p>Smart diagnostics — including i-Ready and NWEA MAP integration — find each student's true starting point.</p>
+      </div>
+      <div class="dense-item rv">
+        <span class="tag" style="color:#D6912E">Trustworthy</span>
+        <h3>Standards-aligned, no exceptions.</h3>
+        <p>Every skill maps to Common Core or your state framework — question formats mirror the real tests.</p>
+        <div class="mini-track"><span class="mt-dot" style="background:#3DD68C"></span> Aligned to your state standards</div>
+      </div>
+      <div class="dense-item rv">
+        <span class="tag" style="color:var(--orange)">Fast</span>
+        <h3>~25 minutes, start to mastery.</h3>
+        <p>No wasted time on concepts a student already owns, and no rushing past ones they don't.</p>
+        <div class="dense-visual"><span class="dense-stat">~25<small>MIN / SKILL</small></span></div>
+      </div>
+      <div class="dense-item rv">
+        <span class="tag" style="color:var(--lav)">Powerful</span>
+        <h3>Nearly 2,000 skills, K–12.</h3>
+        <p>~700 ELA skills across 6 domains, ~1,275 math skills across 5 strands — every grade covered.</p>
+      </div>
+      <div class="dense-item rv">
+        <span class="tag" style="color:#2AA36B">Fun</span>
+        <h3>Bloomy takes learning seriously.</h3>
+        <p>And delightful, encouraging interactions just as seriously — mastery should feel like a win.</p>
+      </div>
+      <div class="dense-item rv">
+        <span class="tag" style="color:var(--ink)">Understandable</span>
+        <h3>Insight you don't have to dig for.</h3>
+        <p>Ask "who's stuck on fractions?" in plain English. Bloomy answers — no dashboard spelunking.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="spot" id="spotlights">
+  <div class="spot-row rv">
+    <div class="spot-media">
+      <div class="spot-shot">
+        <div class="inner" id="spot-bot"></div>
+      </div>
+    </div>
+    <div class="spot-text">
+      <span class="spot-tag" style="color:var(--blue-deep)">Seamless</span>
+      <h3>The best way to learn from a mistake.</h3>
+      <p>BloomyBot is a Socratic AI tutor — full support for scaffolded hints, never a straight answer, and it's disabled the moment an assessment starts.</p>
+      <div class="spot-bullets">
+        <div class="b"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Diagnoses the misconception, not just the mistake</div>
+        <div class="b"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Three levels of scaffolded hints</div>
+        <div class="b"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Locked during Summit assessments</div>
+      </div>
+      <a href="#" class="spot-demo">Watch the demo →</a>
+    </div>
+  </div>
+
+  <div class="spot-row rev rv">
+    <div class="spot-media">
+      <div class="spot-shot">
+        <div class="inner" id="spot-teacher"></div>
+      </div>
+    </div>
+    <div class="spot-text">
+      <span class="spot-tag" style="color:var(--orange)">Simple</span>
+      <h3>Ask the questions you actually care about.</h3>
+      <p>No dashboard spelunking. Type a plain-English question and Bloomy answers with live, actionable data — plus ready-made groups for tomorrow's re-teach.</p>
+      <div class="spot-bullets">
+        <div class="b"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Real-time class monitoring</div>
+        <div class="b"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Smart skill-based grouping</div>
+        <div class="b"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> i-Ready &amp; NWEA MAP integration</div>
+      </div>
+      <a href="#" class="spot-demo">Watch the demo →</a>
+    </div>
+  </div>
+
+  <div class="spot-row rv">
+    <div class="spot-media">
+      <div class="spot-shot">
+        <div class="inner" id="spot-curriculum"></div>
+      </div>
+    </div>
+    <div class="spot-text">
+      <span class="spot-tag" style="color:var(--lav)">Understandable</span>
+      <h3>Progress you can actually see.</h3>
+      <p>A 6-domain ELA map and 5 math strands, laid out clearly — so mastery isn't an abstract score, it's a map students and teachers can both read.</p>
+      <div class="spot-bullets">
+        <div class="b"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> ~700 ELA + ~1,275 math skills</div>
+        <div class="b"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> K–12, standards-aligned</div>
+        <div class="b"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Test-mirrored question formats</div>
+      </div>
+      <a href="#" class="spot-demo">Watch the demo →</a>
+    </div>
+  </div>
+
+  <div class="spot-row rev rv">
+    <div class="spot-media">
+      <div class="spot-shot">
+        <div class="inner" id="spot-access"></div>
+      </div>
+    </div>
+    <div class="spot-text">
+      <span class="spot-tag" style="color:#2AA36B">Accessible</span>
+      <h3>Built for every learner.</h3>
+      <p>Read-aloud across all content, adjustable dyslexia-friendly text sizing, full keyboard navigation, and complete screen-reader support — by default, not an add-on.</p>
+      <div class="spot-bullets">
+        <div class="b"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Read-aloud, every question</div>
+        <div class="b"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Dyslexia-friendly sizing</div>
+        <div class="b"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Full screen-reader support</div>
+      </div>
+      <a href="#" class="spot-demo">Watch the demo →</a>
+    </div>
+  </div>
+</section>
+
+<section class="illorow">
+  <div class="illo-stage rv">
+    <svg viewBox="0 0 220 260">
+      <g stroke="#121212" stroke-width="2.4" stroke-linejoin="round">
+        <path d="M110 254 C 110 220 105 205 110 178" stroke-width="8" stroke-linecap="round" fill="none"/>
+        <path d="M70 244 C 64 236 68 227 77 227" fill="none" stroke-linecap="round"/>
+        <path d="M150 244 C 156 236 152 227 143 227" fill="none" stroke-linecap="round"/>
+        <circle cx="71" cy="248" r="7" fill="#FFC94A"/><circle cx="149" cy="248" r="7" fill="#FFC94A"/>
+      </g>
+      <g id="illo-flower" transform="translate(110,120)">
+        <circle cx="0" cy="-40" r="32" fill="#3DD68C" stroke="#121212" stroke-width="2.4"/>
+        <circle cx="37" cy="-12" r="32" fill="#4FC3F7" stroke="#121212" stroke-width="2.4"/>
+        <circle cx="23" cy="32" r="32" fill="#FFC94A" stroke="#121212" stroke-width="2.4"/>
+        <circle cx="-23" cy="32" r="32" fill="#FF5B3F" stroke="#121212" stroke-width="2.4"/>
+        <circle cx="-37" cy="-12" r="32" fill="#9B8CFF" stroke="#121212" stroke-width="2.4"/>
+        <circle cx="0" cy="0" r="24" fill="#fff" stroke="#121212" stroke-width="2.4"/>
+        <circle cx="-8" cy="-4" r="3.2" fill="#121212"/><circle cx="8" cy="-4" r="3.2" fill="#121212"/>
+        <path d="M-8 8 Q0 13 8 8" stroke="#121212" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      </g>
+    </svg>
+  </div>
+  <div class="illo-text">
+    <span class="sec-tag rv">The mastery bar</span>
+    <h2 class="rv">Relentless mastery.<br>Restful teaching.</h2>
+    <p class="rv">Bloomy holds a firm 90% threshold on every one of nearly 2,000 skills — so once a student moves on, teachers never have to wonder if the foundation is solid.</p>
+    <div class="check-grid">
+      <div class="check-item rv"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> 90% threshold</div>
+      <div class="check-item rv"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Standards-aligned</div>
+      <div class="check-item rv"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> No shortcuts</div>
+      <div class="check-item rv"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Teacher visibility</div>
+      <div class="check-item rv"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Full accessibility</div>
+      <div class="check-item rv"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3DD68C" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Grounded in research</div>
+    </div>
+  </div>
+</section>
+
+<section class="tri-sec">
+  <h2 class="rv">Effortless onboarding.<br>Masterful mastery.</h2>
+  <div class="tri-row">
+    <div class="tri-card rv">
+      <div class="tri-shot"><div class="inner" id="tri-0"></div></div>
+      <div class="tri-label"><span class="dot" style="background:#4FC3F7"></span> Diagnostic Placement</div>
+    </div>
+    <div class="tri-card rv">
+      <div class="tri-shot"><div class="inner" id="tri-1"></div></div>
+      <div class="tri-label"><span class="dot" style="background:#FF5B3F"></span> Mission Control</div>
+    </div>
+    <div class="tri-card rv">
+      <div class="tri-shot"><div class="inner" id="tri-2"></div></div>
+      <div class="tri-label"><span class="dot" style="background:#FFC94A"></span> Drag &amp; Drop Grouping</div>
+    </div>
+  </div>
+</section>
+
+<section class="blog">
+  <div class="blog-inner">
+    <h2 class="rv">The latest from Bloomy</h2>
+    <div class="blog-grid">
+      <a class="blog-card rv" href="#">
+        <div class="blog-thumb" style="background:#DCEFFB">
+          <svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="30" fill="#4FC3F7" stroke="#121212" stroke-width="2.4"/><path d="M28 42 L36 50 L54 30" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="blog-body">
+          <span class="date">Published 12 June, 2026</span>
+          <h3>Why Mastery Learning Beats the Pacing Guide</h3>
+          <p>Traditional pacing moves every student forward on the same day, regardless of readiness — and the gaps compound for years. Here's the research behind holding the line at 90%.</p>
+        </div>
+      </a>
+      <a class="blog-card rv" href="#">
+        <div class="blog-thumb" style="background:#FFF1DE">
+          <svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="30" fill="#FFC94A" stroke="#121212" stroke-width="2.4"/><circle cx="30" cy="36" r="4" fill="#121212"/><circle cx="50" cy="36" r="4" fill="#121212"/><path d="M28 50 Q40 58 52 50" stroke="#121212" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+        </div>
+        <div class="blog-body">
+          <span class="date">Published 3 May, 2026</span>
+          <h3>Inside BloomyBot: A Tutor That Asks, Not Tells</h3>
+          <p>How we built a Socratic AI tutor that diagnoses misconceptions instead of handing over answers — and why that distinction matters for real learning.</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="details">
+  <h2 class="rv">We sweat the details,<br>no matter how small.</h2>
+
+  <div class="d-row rv">
+    <div class="d-text">
+      <h3>Monitor mastery in real time.</h3>
+      <p>Watch a student's progress climb live, with detailed breakdowns and seamless animation between every stage.</p>
+    </div>
+    <div class="d-media">
+      <svg viewBox="0 0 220 140" width="100%">
+        <text x="110" y="46" text-anchor="middle" font-family="Plus Jakarta Sans" font-weight="800" font-size="34" fill="#121212" id="detail-pct">0%</text>
+        <rect x="20" y="66" width="180" height="12" rx="6" fill="#EBEBE8"/>
+        <rect id="detail-bar" x="20" y="66" width="0" height="12" rx="6" fill="#3DD68C"/>
+        <text x="110" y="104" text-anchor="middle" font-family="Plus Jakarta Sans" font-weight="700" font-size="13" fill="#63636B">MASTERY GATE · 90%</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="d-row rev rv">
+    <div class="d-text">
+      <h3>Understand every misconception.</h3>
+      <p>BloomyBot doesn't just mark an answer wrong — it identifies exactly where the reasoning went sideways.</p>
+    </div>
+    <div class="d-media">
+      <svg viewBox="0 0 240 120" width="100%">
+        <rect x="10" y="14" width="220" height="34" rx="10" fill="#fff" stroke="#EBEBE8"/>
+        <text x="24" y="35" font-family="Plus Jakarta Sans" font-weight="700" font-size="13" fill="#121212">"I compared 3 vs 2 — 3/8 must be bigger."</text>
+        <rect x="10" y="60" width="220" height="46" rx="10" fill="#DCF7EA"/>
+        <text x="24" y="80" font-family="Plus Jakarta Sans" font-weight="700" font-size="12.5" fill="#1D8F5C">Misconception found:</text>
+        <text x="24" y="97" font-family="Plus Jakarta Sans" font-weight="600" font-size="12.5" fill="#1D8F5C">Comparing numerators only</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="d-row rv">
+    <div class="d-text">
+      <h3>Organize your classroom.</h3>
+      <p>Drag students into skill-based groups, star the ones who need attention today, and clear the rest.</p>
+    </div>
+    <div class="d-media">
+      <svg viewBox="0 0 240 120" width="100%">
+        <g font-family="Plus Jakarta Sans" font-weight="700" font-size="12.5" fill="#121212">
+          <rect x="10" y="10" width="100" height="28" rx="8" fill="#fff" stroke="#EBEBE8"/><text x="22" y="28">Maya J.</text>
+          <rect x="10" y="46" width="100" height="28" rx="8" fill="#fff" stroke="#EBEBE8"/><text x="22" y="64">Devon K.</text>
+          <rect x="130" y="10" width="100" height="64" rx="10" fill="#FFF1DE" stroke="#FFC94A"/>
+          <text x="142" y="30" fill="#8A6210">Re-teach group</text>
+          <text x="142" y="50" fill="#8A6210" font-weight="600">Comparing fractions</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="d-row rev rv">
+    <div class="d-text">
+      <h3>See everything, clearly.</h3>
+      <p>Whether you have one class or twelve, Bloomy gives every teacher a bird's-eye view of the whole setup.</p>
+    </div>
+    <div class="d-media">
+      <svg viewBox="0 0 240 110" width="100%">
+        <g>
+          <rect x="10" y="10" width="52" height="90" rx="8" fill="#DCEFFB"/>
+          <rect x="70" y="30" width="52" height="70" rx="8" fill="#FFF1DE"/>
+          <rect x="130" y="50" width="52" height="50" rx="8" fill="#DCF7EA"/>
+          <rect x="190" y="20" width="42" height="80" rx="8" fill="#F1EDFF"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="friends">
+  <div class="friends-head">
+    <div>
+      <h2 class="rv">Friends of Bloomy</h2>
+      <p class="rv">See what educators are saying.</p>
+    </div>
+  </div>
+  <div class="tweet-grid">
+    <div class="tweet rv">
+      <div class="who"><span class="av" style="background:#9B8CFF">KC</span><div><div class="nm">Kellie Carlucci</div><div class="hd">Director of Curriculum, Baystate Academy</div></div></div>
+      "Students are steadily progressing — some now working at 11th- or 12th-grade level in domains. They're invested in the work."
+    </div>
+    <div class="tweet rv">
+      <div class="who"><span class="av" style="background:#4FC3F7">JT</span><div><div class="nm">Jessica Thomas</div><div class="hd">Principal, Edna M. Scott Elementary</div></div></div>
+      "Bloomy helps us differentiate while keeping students connected to grade-level expectations."
+    </div>
+    <div class="tweet rv">
+      <div class="who"><span class="av" style="background:#FF5B3F">PH</span><div><div class="nm">Phillip Hon</div><div class="hd">Founder, Unbound Stockton Community School</div></div></div>
+      "Our intervention block turned positive — students get on-level ELA learning through genuinely high-quality texts."
+    </div>
+    <div class="tweet rv">
+      <div class="who"><span class="av" style="background:#FFC94A">✎</span><div><div class="nm">Grade 5 Teacher</div><div class="hd">Public elementary school</div></div></div>
+      "BloomyBot catching the exact misconception — instead of just marking it wrong — has changed how my re-teach groups work."
+    </div>
+    <div class="tweet rv">
+      <div class="who"><span class="av" style="background:#3DD68C">✎</span><div><div class="nm">Middle School Math Dept.</div><div class="hd">District intervention team</div></div></div>
+      "Being able to just ask the dashboard a question instead of digging through spreadsheets saves us hours every week."
+    </div>
+    <div class="tweet rv">
+      <div class="who"><span class="av" style="background:#121212">✎</span><div><div class="nm">Instructional Coach</div><div class="hd">K-8 charter network</div></div></div>
+      "The 90% bar sounds strict until you see how much confidence it builds. Kids know that when they've mastered something, they've actually mastered it."
+    </div>
+  </div>
+</section>
+
+<section class="faq" id="faq">
+  <div class="faq-grid">
+    <div class="faq-head">
+      <h2 class="rv">Frequently Asked Questions</h2>
+      <p class="rv">Everything you need to know before requesting a demo.</p>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item rv">
+        <div class="faq-q">Is Bloomy aligned to my state's standards? <span class="plus"></span></div>
+        <div class="faq-a"><p>Yes — every one of Bloomy's nearly 2,000 skills maps to Common Core or your state-specific framework, and question formats mirror your summative tests.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <div class="faq-q">Does BloomyBot replace teacher instruction? <span class="plus"></span></div>
+        <div class="faq-a"><p>No. BloomyBot is a Socratic AI tutor that scaffolds reasoning during independent practice — it's disabled entirely during Summit assessments, and every conversation is logged for teacher visibility.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <div class="faq-q">What subjects does Bloomy support? <span class="plus"></span></div>
+        <div class="faq-a"><p>English Language Arts (~700 skills across 6 domains) and Mathematics (~1,275 skills across 5 strands), covering grades K–12.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <div class="faq-q">How does the 90% mastery threshold work? <span class="plus"></span></div>
+        <div class="faq-a"><p>Students must score 90% or better on an independent Summit assessment — no hints, no AI support — before advancing. Fall short, and Bloomy re-teaches the concept a different way.</p></div>
+      </div>
+      <div class="faq-item rv">
+        <div class="faq-q">Is Bloomy accessible for all learners? <span class="plus"></span></div>
+        <div class="faq-a"><p>Yes — read-aloud across all content, adjustable dyslexia-friendly text sizing, full keyboard navigation, and complete screen-reader support are built in by default.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="footcta">
+    <div class="footcta-icons rv">
+      <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="#3DD68C" stroke="#121212" stroke-width="2"/></svg>
+      <svg viewBox="0 0 40 40"><path d="M20 4 L23.5 15.5 L36 15.5 L26 23 L29.5 35 L20 27.5 L10.5 35 L14 23 L4 15.5 L16.5 15.5 Z" fill="#FFC94A" stroke="#121212" stroke-width="2" stroke-linejoin="round"/></svg>
+      <svg viewBox="0 0 40 40"><rect x="4" y="4" width="32" height="32" rx="10" fill="#FF5B3F" stroke="#121212" stroke-width="2"/></svg>
+      <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="#4FC3F7" stroke="#121212" stroke-width="2"/></svg>
+    </div>
+    <h2 class="rv">Explore Bloomy.</h2>
+    <p class="rv">Mastery learning is a whole new way to teach and to learn.</p>
+    <a href="#" class="pill solid big rv">Request a Demo</a>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <a class="logo" href="#">
+        <svg viewBox="0 0 32 32" fill="none">
+          <g stroke="#121212" stroke-width="1.6">
+            <circle cx="16" cy="9.5" r="4" fill="#FF5B3F"/><circle cx="22" cy="13.6" r="4" fill="#FFC94A"/>
+            <circle cx="19.7" cy="20.6" r="4" fill="#9B8CFF"/><circle cx="12.3" cy="20.6" r="4" fill="#3DD68C"/>
+            <circle cx="10" cy="13.6" r="4" fill="#4FC3F7"/><circle cx="16" cy="16" r="3" fill="#fff"/>
+          </g>
+        </svg>
+        Bloomy
+      </a>
+      <p>Mastery learning for every student. Designed in San Francisco, California.</p>
+    </div>
+    <div class="foot-cols">
+      <div class="foot-col">
+        <h5>Product</h5>
+        <a href="#explore">How it works</a>
+        <a href="#showcase">Curriculum</a>
+        <a href="#spotlights">BloomyBot</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="foot-col">
+        <h5>Schools</h5>
+        <a href="#">For districts</a>
+        <a href="#">For families</a>
+        <a href="#">Research base</a>
+        <a href="#">Accessibility</a>
+      </div>
+      <div class="foot-col">
+        <h5>Company</h5>
+        <a href="#">About</a>
+        <a href="mailto:hello@bloomylearning.com">Contact</a>
+        <a href="#">Privacy</a>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Bloomy Learning, Inc.</span>
+    <span>Mastery learning for every student.</span>
+  </div>
+</footer>
+
+<script src="../shared/vendor/gsap.min.js"></script>
+<script src="../shared/vendor/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* nav scroll bg */
+const nav=document.getElementById('nav');
+
+/* hero intro */
+gsap.timeline({defaults:{ease:'power4.out'}})
+  .from('.hero-mid h1',{y:40,opacity:0,duration:1},.1)
+  .to('.hero-mid p',{opacity:1,y:0,duration:.9},.4)
+  .to('.hero-ctas',{opacity:1,y:0,duration:.9},.55)
+  .from('.hero-cluster .wfloat, .hero-cluster > svg:first-child',{scale:0,opacity:0,duration:1,stagger:.06,ease:'back.out(1.8)'},.3);
+
+/* hero cluster mouse parallax + idle drift */
+document.querySelectorAll('.hero-cluster svg').forEach(el=>{
+  const dx=+el.dataset.x||0, dy=+el.dataset.y||0;
+  gsap.to(el,{y:'+='+(dy*.3),duration:2.6+Math.random()*1.4,yoyo:true,repeat:-1,ease:'sine.inOut'});
+});
+addEventListener('mousemove',e=>{
+  const mx=e.clientX/innerWidth-.5, my=e.clientY/innerHeight-.5;
+  document.querySelectorAll('.hero-cluster svg').forEach(el=>{
+    const dx=+el.dataset.x||0, dy=+el.dataset.y||0;
+    gsap.to(el,{x:mx*dx,duration:1.2,overwrite:'auto'});
+  });
+});
+gsap.to('#cluster-flower',{rotation:360,transformOrigin:'50% 50%',duration:40,repeat:-1,ease:'none'});
+gsap.to('#illo-flower',{rotation:360,transformOrigin:'50% 50%',duration:36,repeat:-1,ease:'none'});
+gsap.to('#cluster-bot',{y:'+=6',duration:2,yoyo:true,repeat:-1,ease:'sine.inOut'});
+
+/* generic reveals */
+document.querySelectorAll('.rv').forEach(el=>{
+  if(el.closest('.hero-mid'))return;
+  if(el.classList.contains('phone'))return; /* phones fade in with their own dim-aware tween below */
+  gsap.to(el,{opacity:1,y:0,duration:.9,ease:'power3.out',
+    scrollTrigger:{trigger:el,start:'top 89%'}});
+});
+
+/* phone row fade-in that respects each phone's initial dim state */
+ScrollTrigger.create({trigger:'.phones-row',start:'top 89%',once:true,onEnter:()=>{
+  document.querySelectorAll('.phone').forEach((p,i)=>{
+    const startsDim=p.classList.contains('dim');
+    gsap.to(p,{opacity:startsDim?.5:1,y:0,duration:.9,delay:i*.08,ease:'power3.out'});
+  });
+}});
+
+/* ---- mini phone screen content (reused across showcase + tri-sec + spotlights) ---- */
+function screenBaseCamp(){
+  return `<div style="padding:16px;font-family:'Plus Jakarta Sans';">
+    <div style="font-size:11px;font-weight:800;color:#63636B;letter-spacing:.06em;text-transform:uppercase">Base Camp</div>
+    <div style="margin-top:10px;font-size:14px;font-weight:800;">Comparing fractions</div>
+    <div style="margin-top:12px;background:#F6F6F3;border-radius:10px;padding:12px;font-size:12px;font-weight:600;color:#121212">Which is bigger: 3/8 or 2/5?</div>
+    <div style="margin-top:8px;display:flex;gap:6px">
+      <div style="flex:1;background:#DCF7EA;border-radius:8px;padding:8px;font-size:11px;font-weight:700;color:#1D8F5C;text-align:center">3/8</div>
+      <div style="flex:1;background:#F6F6F3;border-radius:8px;padding:8px;font-size:11px;font-weight:700;text-align:center">2/5</div>
+    </div>
+  </div>`;
+}
+function screenClimb(){
+  return `<div style="padding:16px;font-family:'Plus Jakarta Sans';">
+    <div style="font-size:11px;font-weight:800;color:#63636B;letter-spacing:.06em;text-transform:uppercase">Climb · Level 2</div>
+    <div style="margin-top:10px;font-size:14px;font-weight:800;">Keep going!</div>
+    <div style="margin-top:12px;background:#FFF1DE;border-radius:10px;padding:12px;font-size:12px;font-weight:600;color:#8A6210">Hint: try a common denominator of 40.</div>
+    <div style="margin-top:12px;height:8px;background:#EBEBE8;border-radius:4px;overflow:hidden"><div style="width:64%;height:100%;background:#FFC94A"></div></div>
+    <div style="margin-top:6px;font-size:11px;font-weight:700;color:#63636B">4 of 6 correct</div>
+  </div>`;
+}
+function screenSummit(){
+  return `<div style="padding:16px;font-family:'Plus Jakarta Sans';">
+    <div style="font-size:11px;font-weight:800;color:#63636B;letter-spacing:.06em;text-transform:uppercase">Summit</div>
+    <div style="margin-top:10px;font-size:14px;font-weight:800;">Skill complete!</div>
+    <div style="margin-top:12px;display:flex;align-items:center;justify-content:center;background:#DCF7EA;border-radius:14px;padding:22px 12px">
+      <div style="font-size:30px;font-weight:800;color:#1D8F5C">92%</div>
+    </div>
+    <div style="margin-top:8px;font-size:11px;font-weight:700;color:#1D8F5C;text-align:center">Mastery threshold: 90%</div>
+  </div>`;
+}
+document.getElementById('screen-0').innerHTML=screenBaseCamp();
+document.getElementById('screen-1').innerHTML=screenClimb();
+document.getElementById('screen-2').innerHTML=screenSummit();
+document.getElementById('tri-0').innerHTML=`<div style="padding:14px;font-family:'Plus Jakarta Sans'"><div style="font-size:11px;font-weight:800;color:#63636B">DIAGNOSTIC</div><div style="margin-top:8px;font-size:13px;font-weight:800">Finding your level…</div><div style="margin-top:10px;height:7px;background:#EBEBE8;border-radius:4px"><div style="width:70%;height:100%;background:#4FC3F7;border-radius:4px"></div></div></div>`;
+document.getElementById('tri-1').innerHTML=`<div style="padding:14px;font-family:'Plus Jakarta Sans'"><div style="font-size:11px;font-weight:800;color:#63636B">MISSION CONTROL</div><div style="margin-top:8px;font-size:13px;font-weight:800">28 students · live</div><div style="margin-top:10px;display:flex;gap:5px"><div style="flex:1;height:30px;background:#DCF7EA;border-radius:6px"></div><div style="flex:1;height:30px;background:#FFF1DE;border-radius:6px"></div><div style="flex:1;height:30px;background:#DCEFFB;border-radius:6px"></div></div></div>`;
+document.getElementById('tri-2').innerHTML=`<div style="padding:14px;font-family:'Plus Jakarta Sans'"><div style="font-size:11px;font-weight:800;color:#63636B">GROUPING</div><div style="margin-top:8px;font-size:13px;font-weight:800">Drag to group</div><div style="margin-top:10px;display:flex;flex-direction:column;gap:6px"><div style="background:#F6F6F3;border-radius:6px;padding:6px 8px;font-size:11px;font-weight:700">Maya J.</div><div style="background:#FFF1DE;border-radius:6px;padding:6px 8px;font-size:11px;font-weight:700">Devon K.</div></div></div>`;
+document.getElementById('spot-bot').innerHTML=`<div style="font-family:'Plus Jakarta Sans'"><div style="font-size:11px;font-weight:800;color:#63636B;letter-spacing:.06em;text-transform:uppercase">BloomyBot</div>
+  <div style="margin-top:14px;background:#F6F6F3;border-radius:14px 14px 14px 4px;padding:12px 14px;font-size:12.5px;font-weight:600;max-width:85%">You compared the tops — what do the bottoms tell us?</div>
+  <div style="margin-top:10px;background:#121212;color:#fff;border-radius:14px 14px 4px 14px;padding:12px 14px;font-size:12.5px;font-weight:600;max-width:85%;margin-left:auto">Ohh, eighths are smaller pieces!</div>
+  <div style="margin-top:10px;background:#F6F6F3;border-radius:14px 14px 14px 4px;padding:12px 14px;font-size:12.5px;font-weight:600;max-width:85%">Exactly — so which fraction wins?</div>`;
+document.getElementById('spot-teacher').innerHTML=`<div style="font-family:'Plus Jakarta Sans'"><div style="display:flex;align-items:center;gap:8px;background:#F6F6F3;border-radius:10px;padding:10px 14px;font-size:12.5px;font-weight:700">🔎 who's stuck on fractions?</div>
+  <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
+    <div style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #EBEBE8;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:700">Maya J. <span style="margin-left:auto;color:#D6912E;font-size:11px">64%</span></div>
+    <div style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #EBEBE8;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:700">Devon K. <span style="margin-left:auto;color:#D6912E;font-size:11px">58%</span></div>
+  </div>`;
+document.getElementById('spot-curriculum').innerHTML=`<div style="font-family:'Plus Jakarta Sans'"><div style="font-size:11px;font-weight:800;color:#63636B;letter-spacing:.06em;text-transform:uppercase">ELA · 6 Domains</div>
+  <div style="margin-top:12px;display:flex;flex-direction:column;gap:7px">
+    <div style="background:#F1EDFF;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700">Literary texts</div>
+    <div style="background:#DCEFFB;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700">Informational texts</div>
+    <div style="background:#DCF7EA;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700">Vocabulary</div>
+    <div style="background:#FFF1DE;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700">Grammar</div>
+  </div>`;
+document.getElementById('spot-access').innerHTML=`<div style="font-family:'Plus Jakarta Sans'"><div style="font-size:11px;font-weight:800;color:#63636B;letter-spacing:.06em;text-transform:uppercase">Accessibility</div>
+  <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:700"><span>Read-aloud</span><span style="width:34px;height:18px;background:#3DD68C;border-radius:100px;display:inline-block"></span></div>
+  <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:700"><span>Dyslexia-friendly text</span><span style="width:34px;height:18px;background:#3DD68C;border-radius:100px;display:inline-block"></span></div>
+  <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:700"><span>Screen reader</span><span style="width:34px;height:18px;background:#3DD68C;border-radius:100px;display:inline-block"></span></div>`;
+
+/* phone tab switching (GSAP drives opacity/scale directly so it beats any inline reveal styles) */
+document.querySelectorAll('.phone-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    const i=tab.dataset.tab;
+    document.querySelectorAll('.phone-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.phone').forEach(p=>{
+      const isActive=p.dataset.phone===i;
+      gsap.to(p,{opacity:isActive?1:.5,scale:isActive?1:.94,duration:.4,ease:'power2.out'});
+    });
+  });
+});
+
+/* detail mastery bar animation */
+ScrollTrigger.create({trigger:'#detail-bar',start:'top 80%',once:true,onEnter:()=>{
+  gsap.to('#detail-bar',{attr:{width:162},duration:1.8,ease:'power2.out'});
+  gsap.to({v:0},{v:90,duration:1.8,ease:'power2.out',onUpdate:function(){
+    document.getElementById('detail-pct').textContent=Math.round(this.targets()[0].v)+'%';}});
+}});
+
+/* FAQ accordion */
+document.querySelectorAll('.faq-item').forEach(item=>{
+  const a=item.querySelector('.faq-a');
+  item.querySelector('.faq-q').addEventListener('click',()=>{
+    const isOpen=item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(o=>{o.classList.remove('open');o.querySelector('.faq-a').style.maxHeight=null;});
+    if(!isOpen){item.classList.add('open');a.style.maxHeight=a.scrollHeight+'px';}
+  });
+});
+
+/* magnetic pills */
+document.querySelectorAll('.pill.solid').forEach(b=>{
+  b.addEventListener('mousemove',e=>{
+    const r=b.getBoundingClientRect();
+    gsap.to(b,{x:(e.clientX-r.left-r.width/2)*.2,y:(e.clientY-r.top-r.height/2)*.3,duration:.4});
+  });
+  b.addEventListener('mouseleave',()=>gsap.to(b,{x:0,y:0,duration:.6,ease:'elastic.out(1,.4)'}));
+});
+
+/* smooth anchors */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const id=a.getAttribute('href');if(id.length<2)return;
+    const t=document.querySelector(id);if(!t)return;
+    e.preventDefault();t.scrollIntoView({behavior:'smooth'});
+  });
+});
+</script>
+</body>
+</html>

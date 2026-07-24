@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloomy — Learning that finally clicks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@500;600;700;800;900&family=Figtree:ital,wght@0,400..800;1,400..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FBF5EA;
+  --card:#FFFDF7;
+  --ink:#22374A;
+  --ink-soft:#5A6B7A;
+  --sky:#BCE0EE;
+  --sky-deep:#8EC5DC;
+  --butter:#FFD98E;
+  --butter-deep:#F2B84B;
+  --lav:#CDC2F0;
+  --lav-deep:#A895DD;
+  --mint:#C4E5CB;
+  --mint-deep:#8FCBA0;
+  --coral:#F4845F;
+  --teal:#1E6A7A;
+  --line:rgba(34,55,74,.16);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Figtree',sans-serif;
+  background:var(--cream);color:var(--ink);
+  overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--butter);color:var(--ink)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+h1,h2,h3,h4,.disp{font-family:'Gabarito',sans-serif}
+
+/* subtle paper texture */
+.paperbg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;
+  background-image:radial-gradient(rgba(34,55,74,.045) 1px,transparent 1px);
+  background-size:26px 26px}
+
+/* nav */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 40px;transition:background .4s,box-shadow .4s,padding .4s;
+}
+nav.scrolled{background:rgba(251,245,234,.9);backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--line);padding:12px 40px}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Gabarito';font-weight:800;font-size:25px;color:var(--ink)}
+.logo svg{width:34px;height:34px}
+.nav-links{display:flex;gap:30px;align-items:center;font-size:15px;font-weight:600}
+.nav-links a.nl{position:relative;color:var(--ink)}
+.nav-links a.nl::after{content:'';position:absolute;left:0;bottom:-5px;width:100%;height:2.5px;border-radius:2px;background:var(--coral);transform:scaleX(0);transform-origin:right;transition:transform .35s cubic-bezier(.65,0,.35,1)}
+.nav-links a.nl:hover::after{transform:scaleX(1);transform-origin:left}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--ink);color:var(--cream);
+  padding:13px 26px;border-radius:100px;font-size:15px;font-weight:700;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1),background .3s;will-change:transform;
+}
+.btn:hover{background:#31485E}
+.btn .arrow{transition:transform .3s}
+.btn:hover .arrow{transform:translateX(4px)}
+.btn.coral{background:var(--coral);color:#fff}
+.btn.coral:hover{background:#E96F49}
+.btn.soft{background:#EAF4F8;color:var(--teal);border:1.5px solid var(--sky-deep)}
+.btn.soft:hover{background:#DDEEF5}
+.btn.big{padding:18px 36px;font-size:17px}
+
+/* hero */
+.hero{position:relative;z-index:2;padding:150px 24px 0;text-align:center}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:8px;background:#EAF4F8;border:1.5px solid var(--sky-deep);
+  color:var(--teal);border-radius:100px;padding:8px 18px;font-size:13.5px;font-weight:700;margin-bottom:30px;
+}
+.hero h1{
+  font-size:clamp(46px,7.6vw,104px);font-weight:800;line-height:1.02;letter-spacing:-.025em;
+  max-width:1000px;margin:0 auto;
+}
+.hero h1 .line{display:block;overflow:hidden;padding-bottom:.06em;margin-bottom:-.06em}
+.hero h1 .line>span{display:inline-block}
+.hero h1 .click{color:var(--teal);position:relative;display:inline-block}
+.hero h1 .click svg{position:absolute;left:-3%;bottom:-.22em;width:106%;height:.34em;overflow:visible}
+.hero h1 .click svg path{fill:none;stroke:var(--coral);stroke-width:7;stroke-linecap:round}
+.hero-sub{margin-top:28px;font-size:clamp(17px,1.6vw,20px);line-height:1.6;color:var(--ink-soft);max-width:640px;margin-left:auto;margin-right:auto;font-weight:500}
+.hero-sub b{color:var(--ink);font-weight:700}
+.hero-ctas{margin-top:36px;display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.hero-note{margin-top:20px;font-size:13.5px;color:var(--ink-soft)}
+
+/* hero illustrated world */
+.world-wrap{position:relative;max-width:1300px;margin:30px auto 0;padding:0 10px}
+.world-wrap svg.world{width:100%;height:auto;display:block;overflow:visible}
+.wfloat{will-change:transform}
+
+/* section shell (complexlaw-style rounded container) */
+.shell{position:relative;z-index:2;max-width:1240px;margin:0 auto 90px;padding:0 20px}
+.shell-card{
+  background:var(--card);border:1.5px solid var(--line);border-radius:34px;
+  padding:90px 70px;position:relative;overflow:hidden;
+}
+@media(max-width:860px){.shell-card{padding:60px 28px;border-radius:26px}}
+.pill-tag{
+  display:inline-flex;align-items:center;gap:8px;border-radius:100px;padding:8px 16px;
+  font-size:13px;font-weight:700;margin-bottom:24px;border:1.5px solid;
+}
+.pt-teal{background:#EAF4F8;border-color:var(--sky-deep);color:var(--teal)}
+.pt-butter{background:#FFF4DC;border-color:var(--butter-deep);color:#8A6210}
+.pt-lav{background:#F1EDFC;border-color:var(--lav-deep);color:#6A50B0}
+.pt-mint{background:#EAF6ED;border-color:var(--mint-deep);color:#2E7D4F}
+.pt-coral{background:#FDEEE8;border-color:var(--coral);color:#C75A34}
+h2.sec{font-size:clamp(32px,4.4vw,54px);font-weight:800;letter-spacing:-.02em;line-height:1.08}
+h2.sec .accent{color:var(--teal)}
+h2.sec .accent-c{color:var(--coral)}
+p.sec-sub{margin-top:18px;font-size:17px;line-height:1.65;color:var(--ink-soft);font-weight:500;max-width:56ch}
+
+/* trust strip */
+.trust{position:relative;z-index:2;text-align:center;padding:80px 24px 90px}
+.trust .label{font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:24px}
+.trust-row{display:flex;gap:16px 40px;justify-content:center;flex-wrap:wrap;align-items:center}
+.trust-row span{font-family:'Gabarito';font-weight:700;font-size:19px;color:var(--ink);opacity:.65;transition:opacity .3s}
+.trust-row span:hover{opacity:1}
+.trust-row .sep{opacity:.3;font-size:14px}
+
+/* steps */
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:56px}
+@media(max-width:900px){.steps-grid{grid-template-columns:1fr;max-width:480px;margin-left:auto;margin-right:auto}}
+.step-card{
+  border:1.5px dashed var(--line);border-radius:24px;padding:34px 30px;background:var(--cream);
+  transition:transform .4s cubic-bezier(.34,1.4,.64,1),border-color .4s,background .4s;position:relative;
+}
+.step-card:hover{transform:translateY(-8px);border-color:var(--sky-deep);border-style:solid;background:#fff}
+.step-card .pic{
+  height:150px;border-radius:16px;display:grid;place-items:center;margin-bottom:26px;overflow:hidden;
+}
+.step-card:nth-child(1) .pic{background:#EAF4F8}
+.step-card:nth-child(2) .pic{background:#FFF4DC}
+.step-card:nth-child(3) .pic{background:#EAF6ED}
+.step-card .pic svg{width:130px;height:130px;overflow:visible}
+.step-card .step-no{font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px}
+.step-card h3{font-size:25px;font-weight:800;margin-bottom:10px;letter-spacing:-.01em}
+.step-card p{font-size:15px;line-height:1.6;color:var(--ink-soft);font-weight:500}
+.step-card .mini{margin-top:16px;font-size:13px;font-weight:700;color:var(--teal);display:inline-flex;align-items:center;gap:6px}
+
+/* mastery jar */
+.jar-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center}
+@media(max-width:900px){.jar-grid{grid-template-columns:1fr}}
+.jar-visual{display:flex;justify-content:center}
+.jar-visual svg{width:min(330px,80vw);height:auto;overflow:visible}
+.big-90{font-family:'Gabarito';font-weight:900;font-size:clamp(70px,9vw,130px);line-height:1;color:var(--teal);letter-spacing:-.03em}
+.big-90 span{color:var(--coral)}
+.mastery-points{margin-top:30px;display:flex;flex-direction:column;gap:14px}
+.m-point{display:flex;gap:14px;align-items:flex-start;font-size:15.5px;font-weight:500;color:var(--ink-soft);line-height:1.55}
+.m-point .star{flex:none;width:26px;height:26px}
+.m-point b{color:var(--ink)}
+
+/* curriculum panels */
+.curr-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:56px}
+@media(max-width:860px){.curr-grid{grid-template-columns:1fr}}
+.curr-panel{
+  border:1.5px dashed var(--line);border-radius:24px;padding:38px 36px;position:relative;overflow:hidden;
+  transition:border-color .4s,transform .4s cubic-bezier(.34,1.4,.64,1);
+}
+.curr-panel:hover{transform:translateY(-6px);border-style:solid}
+.curr-panel.ela{background:#F1EDFC}
+.curr-panel.ela:hover{border-color:var(--lav-deep)}
+.curr-panel.math{background:#EAF4F8}
+.curr-panel.math:hover{border-color:var(--sky-deep)}
+.curr-panel h3{font-size:27px;font-weight:800;letter-spacing:-.01em}
+.curr-panel .count{font-family:'Gabarito';font-weight:900;font-size:clamp(40px,4.6vw,58px);letter-spacing:-.02em;margin-top:4px}
+.curr-panel.ela .count{color:#6A50B0}
+.curr-panel.math .count{color:var(--teal)}
+.curr-panel .doms{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px}
+.dom-chip{background:rgba(255,255,255,.75);border:1.5px solid var(--line);border-radius:100px;padding:7px 14px;font-size:13px;font-weight:700;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.dom-chip:hover{transform:scale(1.07) rotate(-1.5deg)}
+.curr-panel .corner-art{position:absolute;right:18px;top:22px;width:74px;height:74px;opacity:.9}
+.curr-foot{margin-top:34px;display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;font-size:14.5px;font-weight:600;color:var(--ink-soft)}
+.curr-foot .dotsep{width:5px;height:5px;border-radius:50%;background:var(--line)}
+
+/* bot section */
+.bot-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:60px;align-items:center}
+@media(max-width:900px){.bot-grid{grid-template-columns:1fr}}
+.bot-stage{
+  background:#EAF4F8;border:1.5px dashed var(--sky-deep);border-radius:24px;padding:40px 30px;
+  display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;
+}
+.bot-stage svg.botchar{width:190px;height:auto;overflow:visible}
+.bubbles{display:flex;flex-direction:column;gap:12px;width:100%;margin-top:18px}
+.bub{
+  background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:13px 17px;font-size:14.5px;line-height:1.5;
+  font-weight:500;max-width:88%;opacity:0;transform:translateY(12px);
+}
+.bub.q{align-self:flex-end;background:var(--ink);color:var(--cream);border-color:var(--ink);border-bottom-right-radius:5px}
+.bub.a{align-self:flex-start;border-bottom-left-radius:5px}
+.bub.a .lvl{display:block;font-size:11.5px;font-weight:800;letter-spacing:.06em;color:var(--coral);margin-top:6px;text-transform:uppercase}
+.bot-copy .feat-list{margin-top:28px;display:flex;flex-direction:column;gap:0}
+.feat{display:flex;gap:16px;align-items:center;padding:16px 0;border-bottom:1.5px dashed var(--line);font-weight:600;font-size:15.5px}
+.feat:last-child{border-bottom:none}
+.feat .fico{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;flex:none}
+.feat:nth-child(1) .fico{background:#EAF4F8}
+.feat:nth-child(2) .fico{background:#FFF4DC}
+.feat:nth-child(3) .fico{background:#FDEEE8}
+.feat span small{display:block;font-weight:500;font-size:13.5px;color:var(--ink-soft);margin-top:2px}
+
+/* teachers */
+.teach-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center}
+@media(max-width:900px){.teach-grid{grid-template-columns:1fr}}
+.desk-panel{
+  background:#FFF4DC;border:1.5px dashed var(--butter-deep);border-radius:24px;padding:30px;position:relative;
+}
+.ask-bar{
+  background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:15px 18px;font-size:15px;font-weight:600;
+  display:flex;align-items:center;gap:10px;box-shadow:0 6px 0 rgba(34,55,74,.05);
+}
+.ask-bar .caret{width:2px;height:18px;background:var(--coral);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.answer-card{
+  margin-top:18px;background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:20px 22px;
+}
+.answer-card .ac-title{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px}
+.group-row{display:flex;align-items:center;gap:12px;padding:9px 0;font-weight:600;font-size:14.5px}
+.group-row .av{width:34px;height:34px;border-radius:50%;flex:none;border:1.5px solid var(--line);overflow:hidden}
+.group-row .av svg{width:100%;height:100%}
+.group-row .why{margin-left:auto;font-size:12.5px;font-weight:700;color:#C75A34;background:#FDEEE8;border-radius:100px;padding:5px 11px;white-space:nowrap}
+.desk-doodle{position:absolute;top:-26px;right:26px;width:64px}
+.teach-checks{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.teach-checks{grid-template-columns:1fr}}
+.tcheck{display:flex;gap:10px;align-items:center;font-weight:600;font-size:14.5px;background:var(--cream);border:1.5px dashed var(--line);border-radius:12px;padding:12px 15px}
+.tcheck svg{flex:none}
+
+/* quotes */
+.quote-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:56px}
+@media(max-width:900px){.quote-grid{grid-template-columns:1fr;max-width:520px;margin-left:auto;margin-right:auto}}
+.q-card{
+  background:var(--cream);border:1.5px dashed var(--line);border-radius:24px;padding:34px 30px;
+  display:flex;flex-direction:column;gap:22px;transition:transform .4s cubic-bezier(.34,1.4,.64,1),border-color .4s,border-style .4s;
+}
+.q-card:hover{transform:translateY(-6px);border-style:solid}
+.q-card:nth-child(1):hover{border-color:var(--lav-deep)}
+.q-card:nth-child(2):hover{border-color:var(--sky-deep)}
+.q-card:nth-child(3):hover{border-color:var(--mint-deep)}
+.q-card blockquote{font-size:16.5px;line-height:1.55;font-weight:500;color:var(--ink)}
+.q-card .who{margin-top:auto;display:flex;gap:13px;align-items:center}
+.q-card .who .avatar{width:52px;height:52px;border-radius:50%;border:1.5px solid var(--line);overflow:hidden;flex:none}
+.q-card .who .avatar svg{width:100%;height:100%}
+.q-card .who .nm{font-weight:800;font-size:14.5px;font-family:'Gabarito'}
+.q-card .who .rl{font-size:13px;color:var(--ink-soft);font-weight:500;margin-top:2px}
+
+/* CTA */
+.cta-shell{position:relative;z-index:2;max-width:1240px;margin:0 auto 30px;padding:0 20px}
+.cta-card{
+  background:#EAF4F8;border:1.5px solid var(--sky-deep);border-radius:34px;
+  padding:90px 40px 0;text-align:center;position:relative;overflow:hidden;
+}
+.cta-card h2{font-size:clamp(38px,5.6vw,72px);font-weight:800;letter-spacing:-.025em;line-height:1.04}
+.cta-card h2 .accent{color:var(--teal)}
+.cta-card p{margin-top:18px;font-size:17px;font-weight:500;color:var(--ink-soft);line-height:1.6}
+.cta-card .hero-ctas{margin-top:34px}
+.cta-card .mail{margin-top:18px;font-size:14px;font-weight:600;color:var(--ink-soft)}
+.cta-card .mail a{color:var(--teal);font-weight:700;border-bottom:1.5px solid transparent;transition:border-color .3s}
+.cta-card .mail a:hover{border-color:var(--teal)}
+.cta-scene{margin-top:40px}
+.cta-scene svg{width:min(760px,94%);height:auto;display:block;margin:0 auto;overflow:visible}
+
+/* footer */
+footer{position:relative;z-index:2;padding:60px 40px 36px}
+.foot-grid{max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;gap:44px;flex-wrap:wrap}
+.foot-brand p{margin-top:13px;font-size:14.5px;color:var(--ink-soft);max-width:27ch;line-height:1.6;font-weight:500}
+.foot-cols{display:flex;gap:72px;flex-wrap:wrap}
+.foot-col h5{font-family:'Gabarito';font-size:13.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:16px}
+.foot-col a{display:block;font-size:15px;font-weight:600;margin-bottom:11px;transition:color .25s}
+.foot-col a:hover{color:var(--coral)}
+.foot-bottom{max-width:1240px;margin:46px auto 0;border-top:1.5px dashed var(--line);padding-top:24px;
+  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:13.5px;font-weight:600;color:var(--ink-soft)}
+
+.rv{opacity:0;transform:translateY(40px)}
+</style>
+</head>
+<body>
+<div class="paperbg"></div>
+
+<nav id="nav">
+  <a class="logo" href="#">
+    <svg viewBox="0 0 40 40" fill="none">
+      <circle cx="20" cy="20" r="17" fill="#BCE0EE" stroke="#22374A" stroke-width="2"/>
+      <g id="logo-bloom">
+        <circle cx="20" cy="12.5" r="4.6" fill="#F4845F" stroke="#22374A" stroke-width="1.6"/>
+        <circle cx="26.8" cy="17.4" r="4.6" fill="#FFD98E" stroke="#22374A" stroke-width="1.6"/>
+        <circle cx="24.2" cy="25.4" r="4.6" fill="#CDC2F0" stroke="#22374A" stroke-width="1.6"/>
+        <circle cx="15.8" cy="25.4" r="4.6" fill="#C4E5CB" stroke="#22374A" stroke-width="1.6"/>
+        <circle cx="13.2" cy="17.4" r="4.6" fill="#8EC5DC" stroke="#22374A" stroke-width="1.6"/>
+        <circle cx="20" cy="20" r="3.6" fill="#FFFDF7" stroke="#22374A" stroke-width="1.6"/>
+      </g>
+    </svg>
+    bloomy
+  </a>
+  <div class="nav-links">
+    <a class="nl" href="#how">How it works</a>
+    <a class="nl" href="#curriculum">Curriculum</a>
+    <a class="nl" href="#bot">BloomyBot</a>
+    <a class="nl" href="#teachers">For teachers</a>
+    <a href="#" class="btn">Request a demo <span class="arrow">→</span></a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-tag rv">✦ AI-powered mastery learning for K–12</div>
+  <h1>
+    <span class="line"><span>Learning that</span></span>
+    <span class="line"><span>finally <span class="click">clicks.<svg viewBox="0 0 200 24" preserveAspectRatio="none"><path class="swoosh" d="M4 18 C 50 8, 120 20, 196 10"/></svg></span></span></span>
+  </h1>
+  <p class="hero-sub rv">Bloomy teaches every student <b>exactly what they need to know, when they need to know it</b> — with adaptive lessons, a friendly Socratic AI tutor, and a 90% bar for true mastery.</p>
+  <div class="hero-ctas rv">
+    <a href="#" class="btn big coral">Request a demo <span class="arrow">→</span></a>
+    <a href="#how" class="btn big soft">See how it works</a>
+  </div>
+  <p class="hero-note rv">Grounded in learning science · loved by real classrooms</p>
+
+  <!-- illustrated world -->
+  <div class="world-wrap">
+    <svg class="world" viewBox="0 0 1300 560" fill="none">
+      <!-- ground shadows -->
+      <ellipse cx="240" cy="512" rx="200" ry="22" fill="rgba(34,55,74,.06)"/>
+      <ellipse cx="650" cy="530" rx="260" ry="24" fill="rgba(34,55,74,.06)"/>
+      <ellipse cx="1060" cy="508" rx="190" ry="20" fill="rgba(34,55,74,.06)"/>
+
+      <!-- dotted mastery path across plinths -->
+      <path id="mastery-path" d="M120 470 C 300 430, 420 470, 560 430 S 860 380, 1000 330 S 1180 260, 1215 220"
+        stroke="#8EC5DC" stroke-width="3" stroke-dasharray="1 12" stroke-linecap="round"/>
+
+      <!-- LEFT: sky-blue arch gate with steps (the doorway in) -->
+      <g class="wfloat" data-depth="14">
+        <g stroke="#22374A" stroke-width="2.5" stroke-linejoin="round">
+          <!-- steps -->
+          <path d="M60 508 L60 478 L100 478 L100 448 L140 448 L140 418 L180 418 L180 508 Z" fill="#BCE0EE"/>
+          <!-- arch block -->
+          <rect x="180" y="330" width="150" height="178" fill="#BCE0EE"/>
+          <path d="M205 508 L205 420 C205 380 305 380 305 420 L305 508 Z" fill="#FBF5EA"/>
+          <!-- roofline -->
+          <rect x="168" y="312" width="174" height="20" rx="9" fill="#8EC5DC"/>
+          <!-- flag on top -->
+          <line x1="255" y1="312" x2="255" y2="270" stroke-linecap="round"/>
+          <path d="M255 272 L292 280 L255 292 Z" fill="#F4845F"/>
+        </g>
+        <!-- little plant by the arch -->
+        <g stroke="#22374A" stroke-width="2.2" stroke-linecap="round">
+          <path d="M368 508 L368 484 M368 492 C 356 488 352 476 354 468 M368 492 C 380 488 384 476 382 468" fill="none"/>
+          <path d="M354 468 C 362 470 367 478 368 486 Z M382 468 C 374 470 369 478 368 486 Z" fill="#8FCBA0"/>
+          <path d="M352 508 L384 508" />
+        </g>
+      </g>
+
+      <!-- CENTER-LEFT: butter plinth with a stack of giant books + apple -->
+      <g class="wfloat" data-depth="22">
+        <g stroke="#22374A" stroke-width="2.5" stroke-linejoin="round">
+          <rect x="430" y="440" width="220" height="70" rx="10" fill="#FFD98E"/>
+          <rect x="452" y="470" width="176" height="10" rx="5" fill="#F2B84B" stroke="none"/>
+          <!-- books -->
+          <rect x="462" y="398" width="156" height="42" rx="8" fill="#CDC2F0"/>
+          <rect x="474" y="358" width="132" height="40" rx="8" fill="#BCE0EE"/>
+          <rect x="486" y="320" width="108" height="38" rx="8" fill="#C4E5CB"/>
+          <line x1="600" y1="408" x2="600" y2="430"/>
+          <line x1="590" y1="368" x2="590" y2="388"/>
+          <line x1="578" y1="330" x2="578" y2="348"/>
+        </g>
+        <!-- apple on top -->
+        <g stroke="#22374A" stroke-width="2.2">
+          <circle cx="540" cy="300" r="14" fill="#F4845F"/>
+          <path d="M540 286 C 539 280 542 276 546 274" fill="none" stroke-linecap="round"/>
+          <path d="M544 280 C 550 274 558 276 560 280 C 556 285 548 285 544 280 Z" fill="#8FCBA0"/>
+        </g>
+      </g>
+
+      <!-- CENTER: tall lavender pencil tower with orbit ring -->
+      <g class="wfloat" data-depth="30">
+        <g stroke="#22374A" stroke-width="2.5" stroke-linejoin="round">
+          <rect x="700" y="420" width="170" height="90" rx="10" fill="#CDC2F0"/>
+          <rect x="718" y="456" width="134" height="10" rx="5" fill="#A895DD" stroke="none"/>
+          <!-- pencil -->
+          <rect x="762" y="230" width="46" height="160" fill="#FFD98E"/>
+          <path d="M762 230 L785 178 L808 230 Z" fill="#FBF5EA"/>
+          <path d="M776 199 L785 178 L794 199 Z" fill="#22374A"/>
+          <rect x="762" y="390" width="46" height="18" fill="#F4845F"/>
+          <line x1="777" y1="238" x2="777" y2="382"/>
+          <line x1="793" y1="238" x2="793" y2="382"/>
+        </g>
+        <!-- orbit ring -->
+        <g id="orbit">
+          <ellipse cx="785" cy="300" rx="88" ry="26" stroke="#8EC5DC" stroke-width="2.5" stroke-dasharray="6 8"/>
+          <circle id="orbit-dot" cx="873" cy="300" r="9" fill="#F4845F" stroke="#22374A" stroke-width="2.2"/>
+        </g>
+      </g>
+
+      <!-- RIGHT: mint staircase with star at top + abc blocks -->
+      <g class="wfloat" data-depth="18">
+        <g stroke="#22374A" stroke-width="2.5" stroke-linejoin="round">
+          <path d="M940 506 L940 464 L985 464 L985 422 L1030 422 L1030 380 L1075 380 L1075 506 Z" fill="#C4E5CB"/>
+          <path d="M1075 380 L1075 506 L1120 506 L1120 380 Z" fill="#8FCBA0"/>
+        </g>
+        <!-- star on pedestal top -->
+        <g id="star-prize" stroke="#22374A" stroke-width="2.2" stroke-linejoin="round">
+          <path d="M1097 316 L1104 336 L1125 336 L1108 349 L1114 369 L1097 357 L1080 369 L1086 349 L1069 336 L1090 336 Z" fill="#F2B84B"/>
+        </g>
+        <!-- abc blocks -->
+        <g stroke="#22374A" stroke-width="2.3" stroke-linejoin="round">
+          <rect x="1148" y="462" width="44" height="44" rx="7" fill="#BCE0EE"/>
+          <rect x="1196" y="462" width="44" height="44" rx="7" fill="#F4845F"/>
+          <rect x="1172" y="416" width="44" height="44" rx="7" fill="#FFD98E"/>
+          <text x="1170" y="492" font-family="Gabarito" font-size="24" font-weight="800" fill="#22374A" text-anchor="middle" stroke="none">A</text>
+          <text x="1218" y="492" font-family="Gabarito" font-size="24" font-weight="800" fill="#FFFDF7" text-anchor="middle" stroke="none">B</text>
+          <text x="1194" y="446" font-family="Gabarito" font-size="24" font-weight="800" fill="#22374A" text-anchor="middle" stroke="none">C</text>
+        </g>
+      </g>
+
+      <!-- floating papers -->
+      <g class="wfloat drift" data-depth="40">
+        <g stroke="#22374A" stroke-width="2" stroke-linejoin="round" transform="rotate(-8 400 200)">
+          <rect x="380" y="180" width="52" height="64" rx="6" fill="#FFFDF7"/>
+          <line x1="390" y1="196" x2="422" y2="196"/><line x1="390" y1="208" x2="422" y2="208"/><line x1="390" y1="220" x2="410" y2="220"/>
+        </g>
+      </g>
+      <g class="wfloat drift" data-depth="34">
+        <g stroke="#22374A" stroke-width="2" stroke-linejoin="round" transform="rotate(10 980 170)">
+          <rect x="958" y="140" width="48" height="58" rx="6" fill="#FFFDF7"/>
+          <line x1="967" y1="155" x2="997" y2="155"/><line x1="967" y1="166" x2="997" y2="166"/><line x1="967" y1="177" x2="985" y2="177"/>
+        </g>
+      </g>
+
+      <!-- gold star coins -->
+      <g class="wfloat coin" data-depth="46">
+        <circle cx="130" cy="240" r="17" fill="#F2B84B" stroke="#22374A" stroke-width="2.2"/>
+        <path d="M130 231 L133 238 L140 238 L134.5 242.5 L136.5 249 L130 245 L123.5 249 L125.5 242.5 L120 238 L127 238 Z" fill="#FFF4DC" stroke="none"/>
+      </g>
+      <g class="wfloat coin" data-depth="52">
+        <circle cx="660" cy="150" r="14" fill="#F2B84B" stroke="#22374A" stroke-width="2.2"/>
+        <path d="M660 143 L662.4 148.6 L668 148.6 L663.6 152 L665.2 157.4 L660 154 L654.8 157.4 L656.4 152 L652 148.6 L657.6 148.6 Z" fill="#FFF4DC" stroke="none"/>
+      </g>
+      <g class="wfloat coin" data-depth="38">
+        <circle cx="1230" cy="300" r="15" fill="#F2B84B" stroke="#22374A" stroke-width="2.2"/>
+        <path d="M1230 292 L1232.6 298 L1238.6 298 L1233.9 301.7 L1235.6 307.5 L1230 303.9 L1224.4 307.5 L1226.1 301.7 L1221.4 298 L1227.4 298 Z" fill="#FFF4DC" stroke="none"/>
+      </g>
+
+      <!-- sparkles -->
+      <g class="spark" transform="translate(320,140)"><path d="M0 -12 L3 -3 L12 0 L3 3 L0 12 L-3 3 L-12 0 L-3 -3 Z" fill="#8EC5DC"/></g>
+      <g class="spark" transform="translate(880,110)"><path d="M0 -10 L2.5 -2.5 L10 0 L2.5 2.5 L0 10 L-2.5 2.5 L-10 0 L-2.5 -2.5 Z" fill="#A895DD"/></g>
+      <g class="spark" transform="translate(1130,180)"><path d="M0 -11 L2.8 -2.8 L11 0 L2.8 2.8 L0 11 L-2.8 2.8 L-11 0 L-2.8 -2.8 Z" fill="#F4845F"/></g>
+      <g class="spark" transform="translate(80,360)"><path d="M0 -9 L2.3 -2.3 L9 0 L2.3 2.3 L0 9 L-2.3 2.3 L-9 0 L-2.3 -2.3 Z" fill="#8FCBA0"/></g>
+    </svg>
+  </div>
+</header>
+
+<section class="trust">
+  <p class="label rv">Growing in classrooms across the country</p>
+  <div class="trust-row rv">
+    <span>Baystate Academy</span><span class="sep">✦</span>
+    <span>Leland School District</span><span class="sep">✦</span>
+    <span>Unbound Stockton</span><span class="sep">✦</span>
+    <span>Edna M. Scott Elementary</span>
+  </div>
+</section>
+
+<section class="shell" id="how">
+  <div class="shell-card">
+    <div style="text-align:center;max-width:720px;margin:0 auto">
+      <span class="pill-tag pt-teal rv">✏️ How Bloomy works</span>
+      <h2 class="sec rv">Every skill is a little journey —<br><span class="accent">learn it, practice it, prove it.</span></h2>
+      <p class="sec-sub rv" style="margin-left:auto;margin-right:auto">About 25 minutes per skill, tuned to each student. No one moves on until the skill truly sticks.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card rv">
+        <div class="pic">
+          <svg viewBox="0 0 130 130">
+            <g stroke="#22374A" stroke-width="2.3" stroke-linejoin="round">
+              <rect x="25" y="40" width="80" height="56" rx="8" fill="#FFFDF7"/>
+              <line x1="65" y1="44" x2="65" y2="92"/>
+              <line x1="36" y1="56" x2="56" y2="56"/><line x1="36" y1="67" x2="56" y2="67"/><line x1="36" y1="78" x2="50" y2="78"/>
+              <line x1="74" y1="56" x2="94" y2="56"/><line x1="74" y1="67" x2="94" y2="67"/>
+            </g>
+            <g stroke="#22374A" stroke-width="2.2">
+              <circle cx="94" cy="88" r="15" fill="#BCE0EE"/>
+              <line x1="105" y1="99" x2="116" y2="110" stroke-linecap="round" stroke-width="4"/>
+            </g>
+            <g class="twinkle"><path d="M30 24 L32.3 30.7 L39 33 L32.3 35.3 L30 42 L27.7 35.3 L21 33 L27.7 30.7 Z" fill="#F2B84B"/></g>
+          </svg>
+        </div>
+        <p class="step-no">Step one</p>
+        <h3>Learn it</h3>
+        <p>A clear, worked-example lesson with think-aloud modeling — then a quick check to make sure the idea landed.</p>
+        <span class="mini">Concept instruction ✓</span>
+      </div>
+      <div class="step-card rv">
+        <div class="pic">
+          <svg viewBox="0 0 130 130">
+            <g stroke="#22374A" stroke-width="2.3" stroke-linejoin="round">
+              <path d="M20 106 L20 84 L44 84 L44 62 L68 62 L68 40 L92 40 L92 106 Z" fill="#C4E5CB"/>
+              <circle cx="32" cy="72" r="9" fill="#F4845F"/>
+            </g>
+            <g stroke="#22374A" stroke-width="2" stroke-linecap="round">
+              <path d="M104 32 C 110 28 116 30 118 35" fill="none"/>
+              <path d="M100 22 L104 32 L112 26" fill="none"/>
+            </g>
+            <g class="twinkle"><path d="M108 64 L110 70 L116 72 L110 74 L108 80 L106 74 L100 72 L106 70 Z" fill="#8EC5DC"/></g>
+          </svg>
+        </div>
+        <p class="step-no">Step two</p>
+        <h3>Practice it</h3>
+        <p>Guided practice that adapts in real time — three levels of gentle scaffolding keep it never too easy, never too hard.</p>
+        <span class="mini">Adaptive difficulty ✓</span>
+      </div>
+      <div class="step-card rv">
+        <div class="pic">
+          <svg viewBox="0 0 130 130">
+            <g stroke="#22374A" stroke-width="2.3" stroke-linejoin="round">
+              <path d="M65 20 L72 42 L95 42 L76.5 56 L83 78 L65 65 L47 78 L53.5 56 L35 42 L58 42 Z" fill="#F2B84B"/>
+              <rect x="42" y="88" width="46" height="20" rx="6" fill="#CDC2F0"/>
+              <line x1="52" y1="98" x2="78" y2="98" stroke-linecap="round"/>
+            </g>
+            <g class="twinkle"><path d="M104 30 L106.3 36.7 L113 39 L106.3 41.3 L104 48 L101.7 41.3 L95 39 L101.7 36.7 Z" fill="#F4845F"/></g>
+            <g class="twinkle"><path d="M24 56 L26 62 L32 64 L26 66 L24 72 L22 66 L16 64 L22 62 Z" fill="#8FCBA0"/></g>
+          </svg>
+        </div>
+        <p class="step-no">Step three</p>
+        <h3>Prove it</h3>
+        <p>An independent mastery check — no hints, no AI help. Score 90% or better and the skill is yours for good.</p>
+        <span class="mini">True mastery ✓</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="shell">
+  <div class="shell-card">
+    <div class="jar-grid">
+      <div>
+        <span class="pill-tag pt-coral rv">⭐ The mastery bar</span>
+        <h2 class="sec rv">The magic number<br>is <span class="accent-c">ninety.</span></h2>
+        <p class="sec-sub rv">Most programs wave students through on a 68 — and the gaps quietly compound for years. Bloomy holds a warm-but-firm 90% bar on every skill, because the next idea deserves solid ground.</p>
+        <div class="mastery-points">
+          <div class="m-point rv">
+            <svg class="star" viewBox="0 0 26 26"><path d="M13 2 L15.8 9.2 L23.5 9.6 L17.5 14.4 L19.5 21.8 L13 17.6 L6.5 21.8 L8.5 14.4 L2.5 9.6 L10.2 9.2 Z" fill="#F2B84B" stroke="#22374A" stroke-width="1.6"/></svg>
+            <span><b>Smart diagnostics find the true starting point</b> — including i-Ready and NWEA MAP integration.</span>
+          </div>
+          <div class="m-point rv">
+            <svg class="star" viewBox="0 0 26 26"><path d="M13 2 L15.8 9.2 L23.5 9.6 L17.5 14.4 L19.5 21.8 L13 17.6 L6.5 21.8 L8.5 14.4 L2.5 9.6 L10.2 9.2 Z" fill="#8EC5DC" stroke="#22374A" stroke-width="1.6"/></svg>
+            <span><b>Every student on their own path</b> — across a 6-domain ELA map and 5 math strands.</span>
+          </div>
+          <div class="m-point rv">
+            <svg class="star" viewBox="0 0 26 26"><path d="M13 2 L15.8 9.2 L23.5 9.6 L17.5 14.4 L19.5 21.8 L13 17.6 L6.5 21.8 L8.5 14.4 L2.5 9.6 L10.2 9.2 Z" fill="#F4845F" stroke="#22374A" stroke-width="1.6"/></svg>
+            <span><b>Didn't hit 90? No drama.</b> Bloomy re-teaches a different way and tries again.</span>
+          </div>
+        </div>
+      </div>
+      <div class="jar-visual rv">
+        <svg viewBox="0 0 330 400">
+          <!-- percent readout -->
+          <text id="jar-pct" x="165" y="52" text-anchor="middle" font-family="Gabarito" font-weight="900" font-size="52" fill="#1E6A7A">0%</text>
+          <!-- jar -->
+          <g stroke="#22374A" stroke-width="3" stroke-linejoin="round">
+            <path d="M95 90 L235 90 L235 76 L95 76 Z" fill="#BCE0EE"/>
+            <path d="M105 90 L105 340 C105 356 121 368 138 368 L192 368 C209 368 225 356 225 340 L225 90" fill="rgba(255,253,247,.75)"/>
+          </g>
+          <!-- 90% line -->
+          <line x1="92" y1="118" x2="238" y2="118" stroke="#F4845F" stroke-width="3" stroke-dasharray="7 7"/>
+          <text x="248" y="123" font-family="Figtree" font-weight="800" font-size="15" fill="#C75A34">90%</text>
+          <!-- stars inside (filled by JS) -->
+          <g id="jar-stars"></g>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="shell" id="curriculum">
+  <div class="shell-card">
+    <div style="text-align:center;max-width:720px;margin:0 auto">
+      <span class="pill-tag pt-lav rv">📚 The curriculum</span>
+      <h2 class="sec rv">Nearly <span class="accent">2,000 skills</span>,<br>ready when your students are</h2>
+      <p class="sec-sub rv" style="margin-left:auto;margin-right:auto">Standards-aligned to Common Core and state frameworks, K–12 — with question formats that mirror the tests that matter.</p>
+    </div>
+    <div class="curr-grid">
+      <div class="curr-panel ela rv">
+        <svg class="corner-art" viewBox="0 0 74 74">
+          <g stroke="#22374A" stroke-width="2" stroke-linejoin="round">
+            <rect x="12" y="18" width="50" height="40" rx="6" fill="#FFFDF7"/>
+            <line x1="37" y1="21" x2="37" y2="55"/>
+            <line x1="19" y1="30" x2="31" y2="30"/><line x1="19" y1="38" x2="31" y2="38"/>
+            <line x1="43" y1="30" x2="55" y2="30"/><line x1="43" y1="38" x2="55" y2="38"/>
+          </g>
+        </svg>
+        <h3>English Language Arts</h3>
+        <div class="count" data-count="700" data-prefix="~">~0</div>
+        <p style="font-weight:600;font-size:14px;color:#6A50B0;margin-top:2px">skills across 6 domains</p>
+        <div class="doms">
+          <span class="dom-chip">Literary</span><span class="dom-chip">Informational</span><span class="dom-chip">Vocabulary</span>
+          <span class="dom-chip">Grammar</span><span class="dom-chip">Mechanics</span><span class="dom-chip">Writing</span>
+        </div>
+      </div>
+      <div class="curr-panel math rv">
+        <svg class="corner-art" viewBox="0 0 74 74">
+          <g stroke="#22374A" stroke-width="2" stroke-linejoin="round">
+            <circle cx="26" cy="28" r="12" fill="#FFD98E"/>
+            <rect x="42" y="38" width="20" height="20" rx="4" fill="#F4845F"/>
+            <path d="M14 62 L24 44 L34 62 Z" fill="#C4E5CB"/>
+          </g>
+        </svg>
+        <h3>Mathematics</h3>
+        <div class="count" data-count="1275" data-prefix="~">~0</div>
+        <p style="font-weight:600;font-size:14px;color:var(--teal);margin-top:2px">skills across 5 strands</p>
+        <div class="doms">
+          <span class="dom-chip">Number sense</span><span class="dom-chip">Fractions &amp; ratios</span><span class="dom-chip">Algebraic thinking</span>
+          <span class="dom-chip">Geometry</span><span class="dom-chip">Data &amp; statistics</span>
+        </div>
+      </div>
+    </div>
+    <div class="curr-foot rv">
+      <span>K–12, every grade</span><span class="dotsep"></span>
+      <span>Common Core + state-specific</span><span class="dotsep"></span>
+      <span>Read-aloud &amp; dyslexia-friendly text sizing</span><span class="dotsep"></span>
+      <span>Full keyboard &amp; screen-reader support</span>
+    </div>
+  </div>
+</section>
+
+<section class="shell" id="bot">
+  <div class="shell-card">
+    <div class="bot-grid">
+      <div class="bot-stage rv">
+        <svg class="botchar" viewBox="0 0 190 210">
+          <!-- flower antenna -->
+          <g id="bot-antenna">
+            <line x1="95" y1="58" x2="95" y2="30" stroke="#22374A" stroke-width="2.5" stroke-linecap="round"/>
+            <g>
+              <circle cx="95" cy="16" r="7" fill="#F4845F" stroke="#22374A" stroke-width="2"/>
+              <circle cx="106" cy="24" r="7" fill="#FFD98E" stroke="#22374A" stroke-width="2"/>
+              <circle cx="102" cy="36" r="7" fill="#CDC2F0" stroke="#22374A" stroke-width="2"/>
+              <circle cx="88" cy="36" r="7" fill="#C4E5CB" stroke="#22374A" stroke-width="2"/>
+              <circle cx="84" cy="24" r="7" fill="#BCE0EE" stroke="#22374A" stroke-width="2"/>
+              <circle cx="95" cy="26" r="5" fill="#FFFDF7" stroke="#22374A" stroke-width="2"/>
+            </g>
+          </g>
+          <!-- head -->
+          <g stroke="#22374A" stroke-width="2.5" stroke-linejoin="round">
+            <rect x="45" y="58" width="100" height="82" rx="24" fill="#FFFDF7"/>
+            <rect x="58" y="74" width="74" height="46" rx="14" fill="#22374A"/>
+          </g>
+          <!-- eyes -->
+          <g id="bot-eyes">
+            <circle cx="80" cy="97" r="7" fill="#BCE0EE"/>
+            <circle cx="110" cy="97" r="7" fill="#BCE0EE"/>
+          </g>
+          <!-- smile -->
+          <path d="M85 128 Q95 134 105 128" stroke="#22374A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <!-- body -->
+          <g stroke="#22374A" stroke-width="2.5" stroke-linejoin="round">
+            <rect x="60" y="140" width="70" height="46" rx="16" fill="#BCE0EE"/>
+            <circle cx="95" cy="163" r="10" fill="#FFD98E"/>
+          </g>
+          <!-- arms: one waving -->
+          <g stroke="#22374A" stroke-width="2.5" stroke-linecap="round">
+            <path id="bot-arm" d="M130 150 C 148 144 156 132 158 118" fill="none"/>
+            <circle cx="158" cy="114" r="7" fill="#F4845F" stroke-width="2.2"/>
+            <path d="M60 152 C 46 156 40 166 40 176" fill="none"/>
+            <circle cx="40" cy="180" r="7" fill="#F4845F" stroke-width="2.2"/>
+          </g>
+        </svg>
+        <div class="bubbles" id="bubbles">
+          <div class="bub q">Is 3/8 bigger than 2/5? I said yes — 3 beats 2.</div>
+          <div class="bub a">Interesting thinking! You compared the tops. What do the <b>bottoms</b> tell us about the size of each piece?</div>
+          <div class="bub q">Ohh… eighths are smaller pieces than fifths?</div>
+          <div class="bub a">Exactly! If both fractions were made of 40 pieces, how many would each be?<span class="lvl">scaffold level 2 · still not telling</span></div>
+          <div class="bub q">15/40 vs 16/40 — 2/5 wins. I had it backwards! 🎉</div>
+        </div>
+      </div>
+      <div class="bot-copy">
+        <span class="pill-tag pt-teal rv">🤖 Meet BloomyBot</span>
+        <h2 class="sec rv">A tutor that asks<br><span class="accent">the right questions.</span></h2>
+        <p class="sec-sub rv">BloomyBot never hands over the answer. It's a Socratic tutor that spots the exact wrong turn in a student's thinking, then guides them — step by gentle step — until the reasoning is theirs.</p>
+        <div class="feat-list">
+          <div class="feat rv">
+            <div class="fico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E6A7A" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
+            <span>Diagnoses misconceptions<small>Finds the wrong turn — not just the wrong answer.</small></span>
+          </div>
+          <div class="feat rv">
+            <div class="fico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A6210" stroke-width="2.2" stroke-linecap="round"><path d="M4 20 L4 14 M10 20 L10 10 M16 20 L16 6 M22 20 L22 20"/></svg></div>
+            <span>Scaffolds step by step<small>Three levels of hints that guide, never carry.</small></span>
+          </div>
+          <div class="feat rv">
+            <div class="fico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C75A34" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="10" width="16" height="10" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+            <span>Off during mastery checks<small>And every conversation is visible to teachers.</small></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="shell" id="teachers">
+  <div class="shell-card">
+    <div class="teach-grid">
+      <div>
+        <span class="pill-tag pt-butter rv">🍎 For teachers</span>
+        <h2 class="sec rv">Just ask for the data<br><span class="accent">in plain English.</span></h2>
+        <p class="sec-sub rv">No dashboard spelunking. Type "who's stuck on comparing fractions?" and Bloomy answers with live insight — plus ready-made small groups for tomorrow morning.</p>
+        <div class="teach-checks">
+          <div class="tcheck rv"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2E7D4F" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Real-time class monitoring</div>
+          <div class="tcheck rv"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2E7D4F" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Smart skill-based grouping</div>
+          <div class="tcheck rv"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2E7D4F" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Every tutor chat, visible</div>
+          <div class="tcheck rv"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2E7D4F" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> i-Ready &amp; NWEA MAP integration</div>
+        </div>
+      </div>
+      <div class="desk-panel rv">
+        <svg class="desk-doodle" viewBox="0 0 64 64">
+          <g stroke="#22374A" stroke-width="2.2" stroke-linejoin="round">
+            <circle cx="32" cy="30" r="16" fill="#F4845F"/>
+            <path d="M32 14 C 31 8 34 4 38 2" fill="none" stroke-linecap="round"/>
+            <path d="M36 8 C 42 2 50 4 52 8 C 48 13 40 13 36 8 Z" fill="#8FCBA0"/>
+          </g>
+        </svg>
+        <div class="ask-bar"><span>🔎</span><span id="ask-text"></span><span class="caret"></span></div>
+        <div class="answer-card">
+          <p class="ac-title">Suggested group · comparing fractions</p>
+          <div class="group-row">
+            <span class="av"><svg viewBox="0 0 34 34"><rect width="34" height="34" fill="#CDC2F0"/><circle cx="17" cy="13" r="6" fill="#FFFDF7" stroke="#22374A" stroke-width="1.5"/><path d="M6 30 C 6 22 28 22 28 30" fill="#FFFDF7" stroke="#22374A" stroke-width="1.5"/></svg></span>
+            Maya J. <span class="why">stuck at level 2</span>
+          </div>
+          <div class="group-row">
+            <span class="av"><svg viewBox="0 0 34 34"><rect width="34" height="34" fill="#BCE0EE"/><circle cx="17" cy="13" r="6" fill="#FFFDF7" stroke="#22374A" stroke-width="1.5"/><path d="M6 30 C 6 22 28 22 28 30" fill="#FFFDF7" stroke="#22374A" stroke-width="1.5"/></svg></span>
+            Devon K. <span class="why">missed 3 of 5</span>
+          </div>
+          <div class="group-row">
+            <span class="av"><svg viewBox="0 0 34 34"><rect width="34" height="34" fill="#C4E5CB"/><circle cx="17" cy="13" r="6" fill="#FFFDF7" stroke="#22374A" stroke-width="1.5"/><path d="M6 30 C 6 22 28 22 28 30" fill="#FFFDF7" stroke="#22374A" stroke-width="1.5"/></svg></span>
+            Theo W. <span class="why">same misconception</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="shell">
+  <div class="shell-card">
+    <div style="text-align:center;max-width:720px;margin:0 auto">
+      <span class="pill-tag pt-mint rv">💬 From real classrooms</span>
+      <h2 class="sec rv">Teachers said it<br><span class="accent">better than we could</span></h2>
+    </div>
+    <div class="quote-grid">
+      <div class="q-card rv">
+        <blockquote>"Students are steadily progressing — some now working at 11th- or 12th-grade level in domains. They're invested in the work."</blockquote>
+        <div class="who">
+          <span class="avatar"><svg viewBox="0 0 52 52"><rect width="52" height="52" fill="#CDC2F0"/><circle cx="26" cy="20" r="9" fill="#FFFDF7" stroke="#22374A" stroke-width="1.8"/><path d="M9 46 C 9 33 43 33 43 46" fill="#FFFDF7" stroke="#22374A" stroke-width="1.8"/></svg></span>
+          <div><div class="nm">Kellie Carlucci</div><div class="rl">Director of Curriculum, Baystate Academy</div></div>
+        </div>
+      </div>
+      <div class="q-card rv">
+        <blockquote>"Bloomy helps us differentiate while keeping students connected to grade-level expectations."</blockquote>
+        <div class="who">
+          <span class="avatar"><svg viewBox="0 0 52 52"><rect width="52" height="52" fill="#BCE0EE"/><circle cx="26" cy="20" r="9" fill="#FFFDF7" stroke="#22374A" stroke-width="1.8"/><path d="M9 46 C 9 33 43 33 43 46" fill="#FFFDF7" stroke="#22374A" stroke-width="1.8"/></svg></span>
+          <div><div class="nm">Jessica Thomas</div><div class="rl">Principal, Edna M. Scott Elementary</div></div>
+        </div>
+      </div>
+      <div class="q-card rv">
+        <blockquote>"Our intervention block turned positive — students get on-level ELA learning through genuinely high-quality texts."</blockquote>
+        <div class="who">
+          <span class="avatar"><svg viewBox="0 0 52 52"><rect width="52" height="52" fill="#C4E5CB"/><circle cx="26" cy="20" r="9" fill="#FFFDF7" stroke="#22374A" stroke-width="1.8"/><path d="M9 46 C 9 33 43 33 43 46" fill="#FFFDF7" stroke="#22374A" stroke-width="1.8"/></svg></span>
+          <div><div class="nm">Phillip Hon</div><div class="rl">Founder, Unbound Stockton Community School</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-shell">
+  <div class="cta-card">
+    <h2 class="rv">Ready to make it<br><span class="accent">click for your students?</span></h2>
+    <p class="rv">A 30-minute demo — your curriculum, your data, your questions.</p>
+    <div class="hero-ctas rv">
+      <a href="#" class="btn big coral">Request a demo <span class="arrow">→</span></a>
+    </div>
+    <p class="mail rv">or write us — <a href="mailto:hello@bloomylearning.com">hello@bloomylearning.com</a></p>
+    <div class="cta-scene rv">
+      <svg viewBox="0 0 760 180">
+        <!-- rolling ground -->
+        <path d="M0 180 L0 150 C 120 130 240 150 380 140 C 520 130 640 148 760 138 L760 180 Z" fill="#C4E5CB" stroke="#22374A" stroke-width="2.5"/>
+        <!-- little school flag -->
+        <g stroke="#22374A" stroke-width="2.5" stroke-linecap="round">
+          <line x1="380" y1="140" x2="380" y2="70"/>
+          <path d="M380 72 L432 84 L380 100 Z" fill="#F4845F"/>
+        </g>
+        <!-- book stack left -->
+        <g stroke="#22374A" stroke-width="2.2" stroke-linejoin="round">
+          <rect x="120" y="120" width="76" height="18" rx="5" fill="#BCE0EE"/>
+          <rect x="128" y="102" width="60" height="18" rx="5" fill="#FFD98E"/>
+          <rect x="136" y="84" width="44" height="18" rx="5" fill="#CDC2F0"/>
+        </g>
+        <!-- star burst right -->
+        <g stroke="#22374A" stroke-width="2.2" stroke-linejoin="round">
+          <path d="M600 78 L607 98 L628 98 L611 111 L617 131 L600 119 L583 131 L589 111 L572 98 L593 98 Z" fill="#F2B84B"/>
+        </g>
+        <!-- sparkles -->
+        <g class="spark" transform="translate(250,60)"><path d="M0 -9 L2.3 -2.3 L9 0 L2.3 2.3 L0 9 L-2.3 2.3 L-9 0 L-2.3 -2.3 Z" fill="#8EC5DC"/></g>
+        <g class="spark" transform="translate(510,50)"><path d="M0 -8 L2 -2 L8 0 L2 2 L0 8 L-2 2 L-8 0 L-2 -2 Z" fill="#A895DD"/></g>
+        <g class="spark" transform="translate(680,40)"><path d="M0 -9 L2.3 -2.3 L9 0 L2.3 2.3 L0 9 L-2.3 2.3 L-9 0 L-2.3 -2.3 Z" fill="#F4845F"/></g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <a class="logo" href="#">
+        <svg viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="20" r="17" fill="#BCE0EE" stroke="#22374A" stroke-width="2"/>
+          <g>
+            <circle cx="20" cy="12.5" r="4.6" fill="#F4845F" stroke="#22374A" stroke-width="1.6"/>
+            <circle cx="26.8" cy="17.4" r="4.6" fill="#FFD98E" stroke="#22374A" stroke-width="1.6"/>
+            <circle cx="24.2" cy="25.4" r="4.6" fill="#CDC2F0" stroke="#22374A" stroke-width="1.6"/>
+            <circle cx="15.8" cy="25.4" r="4.6" fill="#C4E5CB" stroke="#22374A" stroke-width="1.6"/>
+            <circle cx="13.2" cy="17.4" r="4.6" fill="#8EC5DC" stroke="#22374A" stroke-width="1.6"/>
+            <circle cx="20" cy="20" r="3.6" fill="#FFFDF7" stroke="#22374A" stroke-width="1.6"/>
+          </g>
+        </svg>
+        bloomy
+      </a>
+      <p>Mastery learning for every student. Designed in San Francisco, California.</p>
+    </div>
+    <div class="foot-cols">
+      <div class="foot-col">
+        <h5>Product</h5>
+        <a href="#how">How it works</a>
+        <a href="#curriculum">Curriculum</a>
+        <a href="#bot">BloomyBot</a>
+        <a href="#teachers">For teachers</a>
+      </div>
+      <div class="foot-col">
+        <h5>Schools</h5>
+        <a href="#">For districts</a>
+        <a href="#">For families</a>
+        <a href="#">Research base</a>
+        <a href="#">Accessibility</a>
+      </div>
+      <div class="foot-col">
+        <h5>Company</h5>
+        <a href="#">About</a>
+        <a href="mailto:hello@bloomylearning.com">Contact</a>
+        <a href="#">Privacy</a>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Bloomy Learning, Inc.</span>
+    <span>Made with care — and a 90% mastery bar. ✦</span>
+  </div>
+</footer>
+
+<script src="../shared/vendor/gsap.min.js"></script>
+<script src="../shared/vendor/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* nav */
+const nav=document.getElementById('nav');
+addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>40),{passive:true});
+
+/* hero intro */
+gsap.timeline({defaults:{ease:'power4.out'}})
+  .from('.hero h1 .line > span',{yPercent:112,duration:1.15,stagger:.12},.1)
+  .to('.hero-tag',{opacity:1,y:0,duration:.8},.35)
+  .to('.hero-sub',{opacity:1,y:0,duration:.9},.85)
+  .to('.hero-ctas',{opacity:1,y:0,duration:.9},1)
+  .to('.hero-note',{opacity:1,y:0,duration:.9},1.15);
+
+/* swoosh underline */
+const sw=document.querySelector('.swoosh');
+const swLen=sw.getTotalLength();
+gsap.set(sw,{strokeDasharray:swLen,strokeDashoffset:swLen});
+gsap.to(sw,{strokeDashoffset:0,duration:.8,ease:'power2.inOut',delay:1});
+
+/* world scene: rise in, then gentle float */
+gsap.from('.world .wfloat',{y:70,opacity:0,duration:1.4,stagger:.1,ease:'power3.out',delay:.5});
+document.querySelectorAll('.world .wfloat').forEach((g,i)=>{
+  gsap.to(g,{y:i%2? -8 : -13,duration:2.6+i*.3,yoyo:true,repeat:-1,ease:'sine.inOut',delay:1.8});
+});
+/* papers drift with slight rotation */
+document.querySelectorAll('.world .drift > g').forEach((g,i)=>{
+  gsap.to(g,{rotation:i%2?6:-6,transformOrigin:'50% 50%',duration:3.4,yoyo:true,repeat:-1,ease:'sine.inOut'});
+});
+/* coins flip */
+document.querySelectorAll('.world .coin').forEach((c,i)=>{
+  gsap.to(c,{scaleX:.15,transformOrigin:'50% 50%',duration:1.1,yoyo:true,repeat:-1,repeatDelay:2.2+i,ease:'sine.inOut',delay:i*.8});
+});
+/* sparkles twinkle */
+document.querySelectorAll('.spark').forEach((s,i)=>{
+  gsap.fromTo(s,{scale:.5,opacity:.4,transformOrigin:'50% 50%'},
+    {scale:1.15,opacity:1,duration:1.2+i*.2,yoyo:true,repeat:-1,ease:'sine.inOut',delay:i*.4});
+});
+document.querySelectorAll('.twinkle').forEach((s,i)=>{
+  gsap.fromTo(s,{scale:.6,opacity:.5,transformOrigin:'50% 50%'},
+    {scale:1.1,opacity:1,duration:1.4,yoyo:true,repeat:-1,ease:'sine.inOut',delay:i*.5});
+});
+/* orbit dot */
+(function(){
+  const dot=document.getElementById('orbit-dot');
+  const cx=785,cy=300,rx=88,ry=26;
+  gsap.to({a:0},{a:Math.PI*2,duration:9,repeat:-1,ease:'none',onUpdate:function(){
+    const a=this.targets()[0].a;
+    dot.setAttribute('cx',cx+Math.cos(a)*rx);
+    dot.setAttribute('cy',cy+Math.sin(a)*ry);
+  }});
+})();
+/* star prize pulse */
+gsap.to('#star-prize',{scale:1.12,rotation:8,transformOrigin:'50% 50%',duration:1.6,yoyo:true,repeat:-1,ease:'sine.inOut'});
+
+/* mastery path draw on scroll */
+const mp=document.getElementById('mastery-path');
+ScrollTrigger.create({trigger:'.world-wrap',start:'top 75%',once:true,onEnter:()=>{
+  const len=mp.getTotalLength();
+  gsap.fromTo(mp,{strokeDasharray:`1 12`,strokeDashoffset:len,opacity:0},
+    {strokeDashoffset:0,opacity:1,duration:2.4,ease:'power2.inOut'});
+}});
+
+/* hero world mouse parallax */
+addEventListener('mousemove',e=>{
+  const dx=e.clientX/innerWidth-.5, dy=e.clientY/innerHeight-.5;
+  document.querySelectorAll('.world .wfloat').forEach(g=>{
+    const d=+g.dataset.depth||16;
+    gsap.to(g,{x:dx*d,duration:1.2,overwrite:'auto'});
+  });
+});
+
+/* generic reveals */
+document.querySelectorAll('.rv').forEach(el=>{
+  if(el.closest('.hero'))return;
+  gsap.to(el,{opacity:1,y:0,duration:1,ease:'power3.out',
+    scrollTrigger:{trigger:el,start:'top 88%'}});
+});
+
+/* counters */
+document.querySelectorAll('[data-count]').forEach(el=>{
+  const target=+el.dataset.count,prefix=el.dataset.prefix||'';
+  ScrollTrigger.create({trigger:el,start:'top 88%',once:true,onEnter:()=>{
+    gsap.to({v:0},{v:target,duration:1.8,ease:'power2.out',onUpdate:function(){
+      el.textContent=prefix+Math.round(this.targets()[0].v).toLocaleString();}});
+  }});
+});
+
+/* jar fills with stars to 90% */
+(function(){
+  const holder=document.getElementById('jar-stars');
+  const stars=[];
+  const cols=5,rows=8;
+  const x0=118,y0=352,dx=24,dy=29;
+  const palette=['#F2B84B','#8EC5DC','#F4845F','#A895DD','#8FCBA0'];
+  let n=0;
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const x=x0+c*dx+(r%2?9:0), y=y0-r*dy;
+      if(y<128 && n>=36)continue;
+      const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+      const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+      const s=8;
+      p.setAttribute('d',`M0 ${-s} L${s*.28} ${-s*.28} L${s} 0 L${s*.28} ${s*.28} L0 ${s} L${-s*.28} ${s*.28} L${-s} 0 L${-s*.28} ${-s*.28} Z`);
+      p.setAttribute('fill',palette[n%palette.length]);
+      p.setAttribute('stroke','#22374A');p.setAttribute('stroke-width','1.3');
+      g.appendChild(p);
+      gsap.set(g,{x:x,y:y});
+      p.style.opacity='0';
+      holder.appendChild(g);stars.push(p);n++;
+    }
+  }
+  ScrollTrigger.create({trigger:'.jar-visual',start:'top 70%',once:true,onEnter:()=>{
+    stars.forEach((p,i)=>{
+      gsap.fromTo(p,{opacity:0,y:-110,scale:.4,transformOrigin:'50% 50%'},
+        {opacity:1,y:0,scale:1,duration:.55,delay:i*.045,ease:'bounce.out'});
+    });
+    gsap.to({v:0},{v:90,duration:stars.length*.045+.6,ease:'power1.inOut',onUpdate:function(){
+      document.getElementById('jar-pct').textContent=Math.round(this.targets()[0].v)+'%';}});
+  }});
+})();
+
+/* bot: waving arm + blinking eyes + chat sequence */
+gsap.to('#bot-arm',{attr:{d:'M130 150 C 148 140 158 126 166 116'},duration:.6,yoyo:true,repeat:-1,ease:'sine.inOut'});
+gsap.to('#bot-antenna',{rotation:6,transformOrigin:'50% 100%',duration:2,yoyo:true,repeat:-1,ease:'sine.inOut'});
+setInterval(()=>{
+  gsap.to('#bot-eyes circle',{scaleY:.12,transformOrigin:'50% 50%',duration:.09,yoyo:true,repeat:1});
+},3400);
+ScrollTrigger.create({trigger:'#bubbles',start:'top 78%',once:true,onEnter:()=>{
+  gsap.to('#bubbles .bub',{opacity:1,y:0,duration:.6,stagger:.65,ease:'power3.out'});
+}});
+
+/* teacher ask bar typing */
+ScrollTrigger.create({trigger:'.desk-panel',start:'top 72%',once:true,onEnter:()=>{
+  const q='who needs a re-teach on comparing fractions?';
+  const qt=document.getElementById('ask-text');let i=0;
+  (function type(){if(i<=q.length){qt.textContent=q.slice(0,i);i++;setTimeout(type,32)}})();
+  gsap.from('.group-row',{opacity:0,x:-18,duration:.6,stagger:.18,delay:1.6,ease:'power3.out'});
+}});
+
+/* magnetic buttons */
+document.querySelectorAll('.btn').forEach(b=>{
+  b.addEventListener('mousemove',e=>{
+    const r=b.getBoundingClientRect();
+    gsap.to(b,{x:(e.clientX-r.left-r.width/2)*.22,y:(e.clientY-r.top-r.height/2)*.32,duration:.4});
+  });
+  b.addEventListener('mouseleave',()=>gsap.to(b,{x:0,y:0,duration:.6,ease:'elastic.out(1,.4)'}));
+});
+
+/* smooth anchors */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const id=a.getAttribute('href');if(id.length<2)return;
+    const t=document.querySelector(id);if(!t)return;
+    e.preventDefault();t.scrollIntoView({behavior:'smooth'});
+  });
+});
+</script>
+</body>
+</html>
